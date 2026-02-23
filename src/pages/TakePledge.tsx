@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
 import RibbonProgress from '../components/RibbonProgress';
 import logoImage from '../assets/images/logo.png';
+import { getUserData, getDoctorData, acceptTerms, saveDoctorData, takePledge } from '../services/api';
 
 // Extend Window interface for SpeechRecognition API
 interface SpeechRecognitionEvent extends Event {
@@ -42,6 +43,10 @@ const TakePledge: React.FC = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [showConsent, setShowConsent] = useState(true);
   const [pledgeCompleted, setPledgeCompleted] = useState(false);
+  const [userName, setUserName] = useState('');
+  const [isAcceptingTerms, setIsAcceptingTerms] = useState(false);
+  const [doctorName, setDoctorName] = useState('');
+  const [registrationNo, setRegistrationNo] = useState('');
   
   // Speech recognition states
   const [isListening, setIsListening] = useState(false);
@@ -63,6 +68,77 @@ const TakePledge: React.FC = () => {
     setIsMenuOpen(false);
   };
 
+  // Get user data and check terms acceptance
+  useEffect(() => {
+    const userData = getUserData();
+    if (userData) {
+      setUserName(userData.name);
+    }
+
+    // Check if doctor has already accepted terms
+    const doctorData = getDoctorData();
+    console.log('TakePledge page loaded. Doctor data:', doctorData);
+    
+    if (doctorData) {
+      setDoctorName(doctorData.dr_name);
+      setRegistrationNo(doctorData.registration_no || 'N/A');
+      
+      if (doctorData.terms_accepted) {
+        // Terms already accepted, don't show popup
+        console.log('Terms already accepted, hiding popup');
+        setShowConsent(false);
+      } else {
+        console.log('Terms not accepted, showing popup');
+      }
+    } else {
+      console.log('No doctor data found');
+    }
+  }, []);
+
+  /**
+   * Handle accepting terms and conditions
+   */
+  const handleAcceptTerms = async () => {
+    setIsAcceptingTerms(true);
+
+    try {
+      const doctorData = getDoctorData();
+      
+      if (!doctorData) {
+        console.error('No doctor data found');
+        alert('Doctor information not found. Please fill HCP details first.');
+        setShowConsent(false);
+        setIsAcceptingTerms(false);
+        return;
+      }
+
+      console.log('Calling acceptTerms API for doctor ID:', doctorData.id);
+
+      // Call API to accept terms
+      const response = await acceptTerms(doctorData.id);
+
+      console.log('Accept terms response:', response);
+
+      if (response.success) {
+        // Update doctor data in localStorage
+        saveDoctorData(response.data);
+        console.log('Terms accepted successfully, updated data:', response.data);
+        // Hide consent popup
+        setShowConsent(false);
+      } else {
+        console.error('API returned success: false');
+        alert('Failed to save terms acceptance');
+      }
+    } catch (err) {
+      console.error('Failed to accept terms:', err);
+      alert('Error: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      // Still hide the popup even if API fails
+      setShowConsent(false);
+    } finally {
+      setIsAcceptingTerms(false);
+    }
+  };
+
   /**
    * Checks if any target word is found in the transcript
    * @param text - The transcript text to check
@@ -75,9 +151,9 @@ const TakePledge: React.FC = () => {
 
   /**
    * Handles successful speech detection
-   * Stops recognition and navigates to thank-you page
+   * Stops recognition and saves pledge to database
    */
-  const handleSuccessfulDetection = () => {
+  const handleSuccessfulDetection = async () => {
     // Stop speech recognition
     if (recognitionRef.current) {
       recognitionRef.current.stop();
@@ -100,14 +176,33 @@ const TakePledge: React.FC = () => {
       const linearProgress = Math.min(elapsed / animationDuration, 1);
       
       // Apply easing for smooth animation
-      // this 50 should change dynamically
-      const easedProgress = easeOutCubic(linearProgress) * 50;
+      const easedProgress = easeOutCubic(linearProgress) * 100;
       setRibbonProgress(easedProgress);
       
       if (linearProgress < 1) {
         requestAnimationFrame(animateProgress);
       } else {
-        // Animation complete, show success message
+        // Animation complete, trigger pledge save
+        completePledge();
+      }
+    };
+    
+    // Function to save pledge after animation
+    const completePledge = async () => {
+      try {
+        const doctorData = getDoctorData();
+        if (doctorData) {
+          console.log('Saving pledge to database for doctor:', doctorData.id);
+          const response = await takePledge(doctorData.id);
+          if (response.success) {
+            saveDoctorData(response.data);
+            console.log('Pledge saved successfully!');
+          }
+        }
+      } catch (error) {
+        console.error('Error saving pledge:', error);
+      } finally {
+        // Show success message regardless of API response
         setPledgeCompleted(true);
       }
     };
@@ -116,11 +211,6 @@ const TakePledge: React.FC = () => {
     requestAnimationFrame(animateProgress);
     
     console.log('Speech detected! Pledge completed!');
-    
-    // Navigate to thank-you page after brief delay for visual feedback
-    // setTimeout(() => {
-    //   navigate('/thank-you');
-    // }, 1000);
   };
 
   /**
@@ -296,9 +386,10 @@ being stored/used through such portal/platform by Alembic and / or third party.
             {/* Popup Footer */}
             <div className="px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 flex justify-center">
               <button
-                onClick={() => setShowConsent(false)}
-                className="prplbtn1 transition-all duration-300">
-                I Agree
+                onClick={handleAcceptTerms}
+                disabled={isAcceptingTerms}
+                className="prplbtn1 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                {isAcceptingTerms ? 'Processing...' : 'I Agree'}
               </button>
             </div>
           </div>
@@ -312,8 +403,8 @@ being stored/used through such portal/platform by Alembic and / or third party.
         
         {/* Content */}
         <div className="relative z-10 flex flex-col min-h-screen">
-        <Header onMenuClick={toggleMenu} />
-        <SideMenu isOpen={isMenuOpen} onClose={closeMenu} />
+        <Header onMenuClick={toggleMenu} userName={userName} />
+        <SideMenu isOpen={isMenuOpen} onClose={closeMenu} userName={userName} />
       {/* Logo in center of header */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 z-20 pt-4 md:pt-0 hidden sm:block">
           <img src={logoImage} alt="Logo" className="endologo" />
@@ -325,7 +416,7 @@ being stored/used through such portal/platform by Alembic and / or third party.
         
         {/* Doctor Info - Right side below header */}
         <div className="absolute top-28 md:top-28 right-2 sm:right-4 md:right-6 z-20 text-right">
-          <p className="text-[14px] sm:text-[15px] md:text-[15px] text-gray-900 font-medium">Doctor Name: <span className="font-normal">Dr. Sample Name</span> <br className='block sm:hidden' />&nbsp;&nbsp;&nbsp; Registration No.: <span className="font-normal">1234567890</span></p>
+          <p className="text-[14px] sm:text-[15px] md:text-[15px] text-gray-900 font-medium">Doctor Name: <span className="font-normal">{doctorName || 'N/A'}</span> <br className='block sm:hidden' />&nbsp;&nbsp;&nbsp; Registration No.: <span className="font-normal">{registrationNo || 'N/A'}</span></p>
         </div>
         
        <main className="flex-1 flex items-center justify-center text-center">
@@ -333,12 +424,16 @@ being stored/used through such portal/platform by Alembic and / or third party.
               
 
                 {/* Text Content */}
-               <div className="w-full md:w-[75%] text-center">
+               <div className="w-full md:w-[62%] text-center">
                   {/* Show pledge content or success message based on pledgeCompleted state */}
                   {!pledgeCompleted ? (
                     <>
-                      <p className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900 leading-tight mb-8 text-center">
-                        I pledge to raise awareness of endometriosis with the goal of improving the quality of life for every woman affected
+                      <p className="text-base md:text-lg lg:text-xl text-gray-800 leading-relaxed mb-6 text-center">
+                        Alembic Pharmaceuticals Limited is attempting for creating record in Asia Book of Records for 'Maximum no of Healthcare Professionals (HCPs), pledging to raise awareness of Endometriosis with a goal of improving quality of life of affected women.
+                      </p>
+                      
+                      <p className="text-base md:text-lg lg:text-xl text-gray-800 leading-relaxed mb-8 text-center">
+                        By taking this pledge they would be part of creating record in Asia Book of Records for- 'Maximum no of Healthcare Professionals (HCPs), pledging to raise awareness of Endometriosis with a goal of improving quality of life of affected women
                       </p>
                       
                       <p className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900 leading-tight mb-8 text-center">

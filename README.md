@@ -2,10 +2,34 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
+## Environment Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project uses environment-specific configuration files:
+
+- `.env.local` - Local development environment
+- `.env.staging` - Staging environment
+- `.env.production` - Production environment
+- `.env.example` - Template file showing required variables
+
+### Setup Instructions
+
+1. Copy `.env.example` to `.env.local` for local development:
+```bash
+cp .env.example .env.local
+```
+
+2. Update the environment variables in your `.env.local` file as needed.
+
+3. For staging and production deployments, update the API URLs in `.env.staging` and `.env.production` respectively.
+
+## Available Scripts
+
+- `npm run dev` - Start development server (uses `.env.local`)
+- `npm run build` - Build for production (uses `.env.production`)
+- `npm run build:staging` - Build for staging (uses `.env.staging`)
+- `npm run build:production` - Build for production (uses `.env.production`)
+- `npm run preview` - Preview production build locally
+- `npm run lint` - Run ESLint
 
 ## React Compiler
 

@@ -901,3 +901,7 @@ color: #facc15;
         max-width: 90% !important;
     }
 }
+
+.md\:w-\[75\%\] {
+    width: 65%;
+}

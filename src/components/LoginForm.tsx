@@ -2,17 +2,18 @@ import React, { useState } from 'react';
 
 interface LoginFormProps {
   onLogin?: (employeeCode: string) => void;
+  isLoading?: boolean;
+  error?: string;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onLogin, isLoading, error }) => {
   const [employeeCode, setEmployeeCode] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (onLogin) {
+    if (onLogin && employeeCode) {
       onLogin(employeeCode);
     }
-    console.log('Employee code:', employeeCode);
   };
 
   return (
@@ -25,6 +26,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
           >
             Employee code
           </label>
+          {error && (
+            <div className="mb-2 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
           <input
             type="text"
             className="w-full border-none rounded-xl py-2 px-4 text-lg bg-white focus:outline-none focus:shadow-lg focus:shadow-primary/30 transition-shadow"
@@ -32,14 +38,17 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
             value={employeeCode}
             onChange={(e) => setEmployeeCode(e.target.value)}
             placeholder=""
+            required
+            disabled={isLoading}
           />
         </div>
         <div className="text-center">
           <button 
             type="submit" 
-            className="prplbtn1 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300"
+            className="prplbtn1 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading}
           >
-            Login
+            {isLoading ? 'Logging in...' : 'Login'}
           </button>
         </div>
       </form>

@@ -5,9 +5,13 @@ import HCPDetailsForm from '../components/HCPDetailsForm';
 import SideMenu from '../components/SideMenu';
 import eamLogo from '../assets/images/EAM-logo.png';
 import bgImage from '../assets/images/bg01.png';
+import { getUserData, addDoctor, saveDoctorData } from '../services/api';
 
 const HCPDetails: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [userName, setUserName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const toggleMenu = () => {
@@ -22,11 +26,49 @@ const HCPDetails: React.FC = () => {
     navigate('/');
   };
 
-  const handleLogin = (data: any) => {
-    console.log('Login with data:', data);
-    // Navigate to info slider page
-    navigate('/info-slider');
+  const handleSubmit = async (data: any) => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await addDoctor(
+        data.hcpname,
+        data.city,
+        data.registrationNo || undefined,
+        data.mobile || undefined,
+        data.email || undefined,
+        data.pCode || undefined
+      );
+
+      if (response.success) {
+        // Save doctor data to localStorage
+        console.log('Doctor created successfully:', response.data);
+        saveDoctorData(response.data);
+        console.log('Doctor data saved to localStorage');
+        // Navigate to info slider page on success
+        navigate('/info-slider');
+      } else {
+        setError(response.message || 'Failed to add HCP details');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to submit HCP details');
+      console.error('HCP submission error:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  // Check if user is logged in
+  useEffect(() => {
+    const userData = getUserData();
+    if (!userData) {
+      // Redirect to home if not logged in
+      navigate('/');
+    } else {
+      // Set the MR name from user data
+      setUserName(userData.name);
+    }
+  }, [navigate]);
 
   // Prevent body scroll when menu is open
   useEffect(() => {
@@ -53,8 +95,8 @@ const HCPDetails: React.FC = () => {
 
       {/* Content */}
       <div className="relative z-10 flex flex-col min-h-screen">
-        <Header onMenuClick={toggleMenu} />
-        <SideMenu isOpen={isMenuOpen} onClose={closeMenu} />
+        <Header onMenuClick={toggleMenu} userName={userName} showMenu={true} />
+        <SideMenu isOpen={isMenuOpen} onClose={closeMenu} userName={userName} />
         
         <main className="flex-1 flex flex-col relative overflow-hidden">
           <div className="flex-1 px-4 md:px-8 lg:px-16 py-8">
@@ -63,7 +105,12 @@ const HCPDetails: React.FC = () => {
                 <div className="p-4 md:p-8">
                   <img src={eamLogo} alt="EAM Logo" className="mb-4 eam-logo" />
                   <div className="mt-6">
-                    <HCPDetailsForm onBack={handleBack} onLogin={handleLogin} />
+                    <HCPDetailsForm 
+                      onBack={handleBack} 
+                      onSubmit={handleSubmit}
+                      isLoading={isLoading}
+                      error={error}
+                    />
                   </div>
                 </div>
               </div>

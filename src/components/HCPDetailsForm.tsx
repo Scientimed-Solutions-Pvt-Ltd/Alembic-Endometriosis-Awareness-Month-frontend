@@ -3,7 +3,9 @@ import Cropper from 'react-easy-crop';
 
 interface HCPDetailsFormProps {
   onBack?: () => void;
-  onLogin?: (data: FormData) => void;
+  onSubmit?: (data: FormData) => void;
+  isLoading?: boolean;
+  error?: string;
 }
 
 interface FormData {
@@ -58,7 +60,7 @@ const getCroppedImg = async (imageSrc: string, pixelCrop: CroppedAreaPixels): Pr
   return canvas.toDataURL('image/jpeg');
 };
 
-const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onBack, onLogin }) => {
+const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, error }) => {
   const [formData, setFormData] = useState<FormData>({
     hcpname: '',
     registrationNo: '',
@@ -68,6 +70,8 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onBack, onLogin }) => {
     mobile: '',
     email: ''
   });
+  const [nameError, setNameError] = useState('');
+  const [cityError, setCityError] = useState('');
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -82,6 +86,13 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onBack, onLogin }) => {
       ...prev,
       [name]: value
     }));
+    // Clear field-specific errors when user starts typing
+    if (name === 'hcpname' && nameError) {
+      setNameError('');
+    }
+    if (name === 'city' && cityError) {
+      setCityError('');
+    }
   };
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -147,29 +158,50 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onBack, onLogin }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (onLogin) {
-      onLogin(formData);
+    
+    // Reset errors
+    setNameError('');
+    setCityError('');
+    
+    // Custom validation
+    let hasError = false;
+    
+    if (!formData.hcpname.trim()) {
+      setNameError('Please enter HCP name');
+      hasError = true;
     }
-    console.log('Form Data:', formData);
-  };
-
-  const handleBackClick = () => {
-    if (onBack) {
-      onBack();
+    
+    if (!formData.city.trim()) {
+      setCityError('Please enter city');
+      hasError = true;
+    }
+    
+    if (hasError) {
+      return;
+    }
+    
+    if (onSubmit) {
+      onSubmit(formData);
     }
   };
 
   const inputClasses = "w-full border-none rounded-xl py-2 px-4 text-lg bg-white focus:outline-none focus:shadow-lg focus:shadow-primary/30 transition-shadow placeholder-gray-800";
-//   const labelClasses = "block text-lg font-medium text-gray-800 mb-4 text-left";
 
   return (
      <div className="rounded-2xl p-6 md:p-8 shadow-lg max-w-md formbg">
       <h3 className="text-xl md:text-2xl font-bold text-primary mb-4 text-center">Enter HCP Details</h3>
       <form onSubmit={handleSubmit}>
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
         <div className="mb-6">
-          {/* <label htmlFor="hcpname" className={labelClasses}>
-            HCP Name
-          </label> */}
+          {nameError && (
+            <div className="mb-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+              {nameError}
+            </div>
+          )}
           <input
             type="text"
             className={inputClasses}
@@ -178,6 +210,7 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onBack, onLogin }) => {
             value={formData.hcpname}
             onChange={handleChange}
             placeholder="Enter HCP Name*"
+            disabled={isLoading}
           />
         </div>
 
@@ -190,6 +223,7 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onBack, onLogin }) => {
             value={formData.registrationNo}
             onChange={handleChange}
             placeholder="Enter Registration No."
+            disabled={isLoading}
           />
         </div>
 
@@ -202,6 +236,7 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onBack, onLogin }) => {
             value={formData.pCode}
             onChange={handleChange}
             placeholder="Enter P. Code"
+            disabled={isLoading}
           />
         </div>
 
@@ -217,6 +252,7 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onBack, onLogin }) => {
             value={formData.mobile}
             onChange={handleChange}
             placeholder="Enter Mobile Number"
+            disabled={isLoading}
           />
         </div>
 
@@ -232,13 +268,16 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onBack, onLogin }) => {
             value={formData.email}
             onChange={handleChange}
             placeholder="Enter Email ID"
+            disabled={isLoading}
           />
         </div>
 
         <div className="mb-6">
-          {/* <label htmlFor="designation" className={labelClasses}>
-            Designation
-          </label> */}
+          {cityError && (
+            <div className="mb-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+              {cityError}
+            </div>
+          )}
           <input
             type="text"
             className={inputClasses}
@@ -247,6 +286,7 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onBack, onLogin }) => {
             value={formData.city}
             onChange={handleChange}
             placeholder="Enter City*"
+            disabled={isLoading}
           />
         </div>
 
@@ -299,8 +339,10 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onBack, onLogin }) => {
           <small className='text-base'>(* Fields are mandatory)</small>
           <button 
             type="submit" 
-            className="prplbtn1 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
-            Next
+            className="prplbtn1 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Submitting...' : 'Next'}
           </button>
         </div>
       </form>

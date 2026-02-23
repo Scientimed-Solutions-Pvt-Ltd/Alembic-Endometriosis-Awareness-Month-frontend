@@ -15,6 +15,7 @@ import ramimg from '../assets/images/sld2img2.png';
 import icon1 from '../assets/images/sld2ico1.png';
 import icon2 from '../assets/images/sld2ico2.png';
 import icon3 from '../assets/images/sld2ico3.png';
+import { getUserData } from '../services/api';
 
 // Slide 1 Component - Endometriosis Statistics
 const Slide1: React.FC = () => (
@@ -144,6 +145,7 @@ const slides = [
 const InfoSlider: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [userName, setUserName] = useState('');
   const navigate = useNavigate();
 
   const toggleMenu = () => {
@@ -162,9 +164,17 @@ const InfoSlider: React.FC = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   }, []);
 
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index);
-  };
+  // Get user data
+  useEffect(() => {
+    const userData = getUserData();
+    if (userData) {
+      setUserName(userData.name);
+    }
+  }, []);
+
+  // const goToSlide = (index: number) => {
+  //   setCurrentSlide(index);
+  // };
 
   // Prevent body scroll when menu is open
   useEffect(() => {
@@ -206,7 +216,7 @@ const InfoSlider: React.FC = () => {
       
       {/* Content */}
       <div className="relative z-10 flex flex-col min-h-screen">
-        <Header onMenuClick={toggleMenu} />
+        <Header onMenuClick={toggleMenu} userName={userName} />
         
         {/* Logo in center of header */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 z-20 pt-4 md:pt-0 hidden sm:block">
@@ -217,7 +227,7 @@ const InfoSlider: React.FC = () => {
           <img src={logoImage} alt="Logo" className="endologo2" />
         </div>
         
-        <SideMenu isOpen={isMenuOpen} onClose={closeMenu} />
+        <SideMenu isOpen={isMenuOpen} onClose={closeMenu} userName={userName} />
         
         <main className="flex-1 flex flex-col relative">
           {/* Carousel Container */}

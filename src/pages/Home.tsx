@@ -4,22 +4,48 @@ import Header from '../components/Header';
 import LoginForm from '../components/LoginForm';
 import SideMenu from '../components/SideMenu';
 import bgImage from '../assets/images/bg01.png';
+import { mrLogin, saveUserData } from '../services/api';
 
 const Home: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  // const toggleMenu = () => {
+  //   setIsMenuOpen(!isMenuOpen);
+  // };
 
   const closeMenu = () => {
     setIsMenuOpen(false);
   };
 
-  const handleLogin = () => {
-    // Navigate to HCP details page after login
-    navigate('/hcp-details');
+  const handleLogin = async (employeeCode: string) => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await mrLogin(employeeCode, '');
+      
+      if (response.success) {
+        // Save user data to localStorage
+        saveUserData(response.data);
+        
+        // Navigate to HCP details page after successful login
+        navigate('/hcp-details');
+      } else {
+        setError(response.message || 'Login failed. Please try again.');
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Unable to connect to server. Please ensure the backend is running.');
+      }
+      console.error('Login error:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Prevent body scroll when menu is open
@@ -48,7 +74,7 @@ const Home: React.FC = () => {
       
       {/* Content */}
       <div className="relative z-10 flex flex-col min-h-screen">
-        <Header onMenuClick={toggleMenu} />
+        <Header showMenu={false} />
         <SideMenu isOpen={isMenuOpen} onClose={closeMenu} />
         
         <main className="flex-1 flex flex-col">
@@ -62,7 +88,7 @@ const Home: React.FC = () => {
                   
                   {/* Login Form */}
                   <div className="mt-6">
-                    <LoginForm onLogin={handleLogin} />
+                    <LoginForm onLogin={handleLogin} isLoading={isLoading} error={error} />
                   </div>
                 </div>
               </div>

@@ -1,28 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import Header from '../components/Header';
-import SideMenu from '../components/SideMenu';
 import thanksBg from '../assets/images/thanks-bg.png';
+import { getPledgeCount } from '../services/api';
 
 const ThankYou: React.FC = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [pledgeCount, setPledgeCount] = useState(0);
-  const targetCount = 1234; // Target number to count up to (can be fetched from API)
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
+  const [targetCount, setTargetCount] = useState(0);
 
   // Format count to 4 digits
   const formatCount = (count: number): string[] => {
     return count.toString().padStart(4, '0').split('');
   };
 
+  // Fetch pledge count from API
+  useEffect(() => {
+    const fetchPledgeCount = async () => {
+      try {
+        const response = await getPledgeCount();
+        if (response.success) {
+          setTargetCount(response.data.count);
+        }
+      } catch (error) {
+        console.error('Failed to fetch pledge count:', error);
+        // Set default count if API fails
+        setTargetCount(0);
+      }
+    };
+
+    fetchPledgeCount();
+  }, []);
+
   // Animated counter effect
   useEffect(() => {
+    if (targetCount === 0) return;
+
     const duration = 2000; // Animation duration in ms
     const steps = 60; // Number of steps
     const increment = targetCount / steps;
@@ -39,20 +49,7 @@ const ThankYou: React.FC = () => {
     }, duration / steps);
 
     return () => clearInterval(timer);
-  }, []);
-
-  // Prevent body scroll when menu is open
-  useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isMenuOpen]);
+  }, [targetCount]);
 
   return (
     <div className="min-h-screen flex flex-col relative">

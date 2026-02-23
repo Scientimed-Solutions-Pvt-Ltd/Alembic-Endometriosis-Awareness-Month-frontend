@@ -4,9 +4,10 @@ import { Link } from 'react-router-dom';
 interface SideMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  userName?: string;
 }
 
-const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
+const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, userName }) => {
   return (
     <>
       {/* Overlay */}
@@ -22,7 +23,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
         isOpen ? 'right-0' : '-right-[350px]'
       }`}>
         <div className="px-6 py-2 flex justify-end border-b border-gray-200 clsbtn">
-          <span>Dr. Ashwin</span>
+          <span>{userName || 'User'}</span>
           <button 
             className="bg-transparent border-none cursor-pointer p-2 transition-transform duration-200 hover:rotate-90"
             onClick={onClose}
@@ -39,11 +40,11 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
           <ul className="list-none p-0 m-0">
             <li>
               <Link 
-                to="/" 
+                to="/hcp-list" 
                 onClick={onClose}
                 className="block px-8 py-4 text-gray-800 no-underline text-lg font-medium transition-all duration-300 border-l-4 border-transparent hover:bg-gradient-to-r hover:from-primary/10 hover:to-transparent hover:border-l-primary hover:text-primary hover:pl-10"
               >
-                Home
+                HCP List
               </Link>
             </li>
             <li>
