@@ -5,7 +5,7 @@ import SideMenu from '../components/SideMenu';
 import RibbonProgress from '../components/RibbonProgress';
 import logoImage from '../assets/images/logo.png';
 import clickGif from '../assets/images/click.gif';
-import { getUserData, getDoctorData, acceptTerms, saveDoctorData, takePledge } from '../services/api';
+import { getUserData, getDoctorData, acceptTerms, saveDoctorData, takePledge, getPledgeCount } from '../services/api';
 
 // Extend Window interface for SpeechRecognition API
 interface SpeechRecognitionEvent extends Event {
@@ -49,6 +49,10 @@ const TakePledge: React.FC = () => {
   const [doctorName, setDoctorName] = useState('');
   const [registrationNo, setRegistrationNo] = useState('');
   
+  // Pledge count states
+  const [_currentPledgeCount, setCurrentPledgeCount] = useState(0);
+  const TARGET_PLEDGE_COUNT = 10000; // Target: 10,000 doctors
+  
   // Speech recognition states
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
@@ -60,6 +64,19 @@ const TakePledge: React.FC = () => {
 
   // Target words to detect from "I support yellow march"
   const targetWords = ['i support yellow march'];
+
+  /**
+   * Calculate ribbon progress percentage
+   * - If count <= 200: Show minimum 25% fill
+   * - If count > 200: Show actual percentage (count / 10,000) * 100
+   */
+  const calculateRibbonPercentage = (count: number): number => {
+    if (count <= 200) {
+      return 25; // Minimum 25% when count is 200 or less
+    }
+    // Calculate actual percentage for counts > 200
+    return Math.min((count / TARGET_PLEDGE_COUNT) * 100, 100);
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -94,6 +111,25 @@ const TakePledge: React.FC = () => {
     } else {
       console.log('No doctor data found');
     }
+    
+    // Fetch current pledge count to set initial ribbon progress
+    const fetchInitialPledgeCount = async () => {
+      try {
+        const response = await getPledgeCount();
+        if (response.success) {
+          const count = response.data.count;
+          setCurrentPledgeCount(count);
+          // Set initial ribbon progress based on current count
+          const initialProgress = calculateRibbonPercentage(count);
+          setRibbonProgress(initialProgress);
+          console.log(`Initial pledge count: ${count}/${TARGET_PLEDGE_COUNT} (${initialProgress.toFixed(2)}%)`);
+        }
+      } catch (error) {
+        console.error('Failed to fetch initial pledge count:', error);
+      }
+    };
+    
+    fetchInitialPledgeCount();
   }, []);
 
   /**
@@ -164,31 +200,7 @@ const TakePledge: React.FC = () => {
     setIsListening(false);
     setIsAnimating(true);
     
-    // Animate ribbon progress from 0 to 100% using requestAnimationFrame for smoothest animation
-    const animationDuration = 2000; // Total animation time in ms
-    let startTime: number | null = null;
-    
-    // Ease-out cubic for smooth deceleration
-    const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3);
-    
-    const animateProgress = (timestamp: number) => {
-      if (!startTime) startTime = timestamp;
-      const elapsed = timestamp - startTime;
-      const linearProgress = Math.min(elapsed / animationDuration, 1);
-      
-      // Apply easing for smooth animation
-      const easedProgress = easeOutCubic(linearProgress) * 100;
-      setRibbonProgress(easedProgress);
-      
-      if (linearProgress < 1) {
-        requestAnimationFrame(animateProgress);
-      } else {
-        // Animation complete, trigger pledge save
-        completePledge();
-      }
-    };
-    
-    // Function to save pledge after animation
+    // Save pledge first to get updated count
     const completePledge = async () => {
       try {
         const doctorData = getDoctorData();
@@ -200,16 +212,60 @@ const TakePledge: React.FC = () => {
             console.log('Pledge saved successfully!');
           }
         }
+        
+        // Fetch updated pledge count
+        const countResponse = await getPledgeCount();
+        if (countResponse.success) {
+          const newCount = countResponse.data.count;
+          setCurrentPledgeCount(newCount);
+          
+          // Calculate target percentage based on count
+          // If count <= 200: minimum 25%, otherwise actual percentage
+          const targetPercentage = calculateRibbonPercentage(newCount);
+          console.log(`New pledge count: ${newCount}/${TARGET_PLEDGE_COUNT} (${targetPercentage.toFixed(2)}%)`);
+          
+          // Animate ribbon to the actual percentage
+          animateToPercentage(targetPercentage);
+        }
       } catch (error) {
         console.error('Error saving pledge:', error);
-      } finally {
-        // Show success message regardless of API response
         setPledgeCompleted(true);
       }
     };
     
-    // Start the animation
-    requestAnimationFrame(animateProgress);
+    // Function to animate ribbon to target percentage
+    const animateToPercentage = (targetPercentage: number) => {
+      const animationDuration = 2000; // Total animation time in ms
+      const startProgress = ribbonProgress;
+      let startTime: number | null = null;
+      
+      // Ease-out cubic for smooth deceleration
+      const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3);
+      
+      const animateProgress = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const linearProgress = Math.min(elapsed / animationDuration, 1);
+        
+        // Apply easing and interpolate from current to target percentage
+        const easedProgress = easeOutCubic(linearProgress);
+        const currentProgress = startProgress + (targetPercentage - startProgress) * easedProgress;
+        setRibbonProgress(currentProgress);
+        
+        if (linearProgress < 1) {
+          requestAnimationFrame(animateProgress);
+        } else {
+          // Animation complete
+          setRibbonProgress(targetPercentage);
+          setPledgeCompleted(true);
+        }
+      };
+      
+      requestAnimationFrame(animateProgress);
+    };
+    
+    // Start the process
+    await completePledge();
     
     console.log('Speech detected! Pledge completed!');
   };
