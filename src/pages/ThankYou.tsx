@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import thanksBg from '../assets/images/thanks-bg.png';
 import { getPledgeCount } from '../services/api';
 
 const ThankYou: React.FC = () => {
+  const navigate = useNavigate();
   const [pledgeCount, setPledgeCount] = useState(0);
   const [targetCount, setTargetCount] = useState(0);
 
@@ -95,6 +97,17 @@ const ThankYou: React.FC = () => {
             <br />
              <span>Endometriosis Awareness Month</span>
             </p>
+            
+            {/* Home Button */}
+            <button
+              onClick={() => navigate('/hcp-details')}
+              className="px-8 py-3 text-white font-semibold rounded-full shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+              style={{ backgroundColor: '#8f3c84' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#7a3370'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#8f3c84'}
+            >
+              Home
+            </button>
           </div>
           
           {/* <footer className="absolute bottom-2 right-4 md:bottom-4 md:right-6 z-10">

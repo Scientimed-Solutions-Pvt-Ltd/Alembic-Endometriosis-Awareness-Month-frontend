@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
 import RibbonProgress from '../components/RibbonProgress';
 import logoImage from '../assets/images/logo.png';
+import clickGif from '../assets/images/click.gif';
 import { getUserData, getDoctorData, acceptTerms, saveDoctorData, takePledge } from '../services/api';
 
 // Extend Window interface for SpeechRecognition API
@@ -495,7 +496,7 @@ being stored/used through such portal/platform by Alembic and / or third party.
                         {isListening ? 'Stop Listening' : '"I Support Yellow March"'}
                         {!isListening && (
                           <span className="clickgif">
-                            <img src='./src/assets/images/click.gif' alt="Click Animation" />
+                            <img src={clickGif} alt="Click Animation" />
                           </span>
                         )}
                       </button>

@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import LoginForm from '../components/LoginForm';
 import SideMenu from '../components/SideMenu';
 import bgImage from '../assets/images/bg01.png';
+import eamLogo from '../assets/images/EAM-logo.png';
 import { mrLogin, saveUserData } from '../services/api';
 
 const Home: React.FC = () => {
@@ -83,7 +84,7 @@ const Home: React.FC = () => {
               <div className="w-full lg:w-1/2">
                 <div className="p-4 md:p-8">
                   {/* Title */}
-                  <img src='../src/assets/images/EAM-logo.png' alt="Endometriosis Awareness Month Logo" className="mb-4 eam-logo" />
+                  <img src={eamLogo} alt="Endometriosis Awareness Month Logo" className="mb-4 eam-logo" />
                  
                   
                   {/* Login Form */}
