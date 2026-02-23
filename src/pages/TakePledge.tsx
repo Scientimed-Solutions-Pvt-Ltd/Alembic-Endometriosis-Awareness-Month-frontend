@@ -112,24 +112,7 @@ const TakePledge: React.FC = () => {
       console.log('No doctor data found');
     }
     
-    // Fetch current pledge count to set initial ribbon progress
-    const fetchInitialPledgeCount = async () => {
-      try {
-        const response = await getPledgeCount();
-        if (response.success) {
-          const count = response.data.count;
-          setCurrentPledgeCount(count);
-          // Set initial ribbon progress based on current count
-          const initialProgress = calculateRibbonPercentage(count);
-          setRibbonProgress(initialProgress);
-          console.log(`Initial pledge count: ${count}/${TARGET_PLEDGE_COUNT} (${initialProgress.toFixed(2)}%)`);
-        }
-      } catch (error) {
-        console.error('Failed to fetch initial pledge count:', error);
-      }
-    };
-    
-    fetchInitialPledgeCount();
+    // Don't fetch pledge count on page load - only show ribbon after pledge is taken
   }, []);
 
   /**
@@ -236,7 +219,7 @@ const TakePledge: React.FC = () => {
     // Function to animate ribbon to target percentage
     const animateToPercentage = (targetPercentage: number) => {
       const animationDuration = 2000; // Total animation time in ms
-      const startProgress = ribbonProgress;
+      const startProgress = 0; // Always start from 0 since ribbon is empty initially
       let startTime: number | null = null;
       
       // Ease-out cubic for smooth deceleration
@@ -247,7 +230,7 @@ const TakePledge: React.FC = () => {
         const elapsed = timestamp - startTime;
         const linearProgress = Math.min(elapsed / animationDuration, 1);
         
-        // Apply easing and interpolate from current to target percentage
+        // Apply easing and interpolate from 0 to target percentage
         const easedProgress = easeOutCubic(linearProgress);
         const currentProgress = startProgress + (targetPercentage - startProgress) * easedProgress;
         setRibbonProgress(currentProgress);
