@@ -209,7 +209,7 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
             name="hcpname"
             value={formData.hcpname}
             onChange={handleChange}
-            placeholder="Enter HCP Name*"
+            placeholder="Enter HCP Name"
             disabled={isLoading}
           />
         </div>
@@ -285,7 +285,7 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
             name="city"
             value={formData.city}
             onChange={handleChange}
-            placeholder="Enter City*"
+            placeholder="Enter City"
             disabled={isLoading}
           />
         </div>
@@ -336,7 +336,7 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
     
 
         <div className="flex justify-between items-center mt-6">
-          <small className='text-base'>(* Fields are mandatory)</small>
+          <small className='text-base'>(All Fields are mandatory)</small>
           <button 
             type="submit" 
             className="prplbtn1 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"

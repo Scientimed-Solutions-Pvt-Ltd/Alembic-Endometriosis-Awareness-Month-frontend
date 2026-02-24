@@ -465,9 +465,10 @@ being stored/used through such portal/platform by Alembic and / or third party.
 
                 {/* Text Content */}
                <div className="w-full md:w-[62%] text-center">
-                  {/* Show pledge content or success message based on pledgeCompleted state */}
-                  {!pledgeCompleted ? (
+                  {/* Show speech UI or Continue button after pledge */}
+                  {!pledgeCompleted && !isAnimating ? (
                     <>
+                      {/* Show pledge content only before success */}
                       <p className="text-base md:text-lg lg:text-xl text-gray-800 leading-relaxed mb-6 text-center">
                         Alembic Pharmaceuticals Limited is attempting for creating record in Asia Book of Records for 'Maximum no of Healthcare Professionals (HCPs), pledging to raise awareness of Endometriosis with a goal of improving quality of life of affected women.
                       </p>
@@ -545,15 +546,15 @@ being stored/used through such portal/platform by Alembic and / or third party.
                       </p>
                     </>
                   ) : (
-                    /* Success Message - Shown after pledge is completed */
+                    /* Just Continue button - Shown after pledge is detected */
                     <div className="flex flex-col items-center justify-center animate-fade-in">
-               
-                      <h2 className="text-2xl md:text-3xl lg:text-3xl font-bold text-purple-900 mb-12 text-center">
-                       Alembic Pharmaceuticals Limited is registering in Asia Book of Records for maximum no of Healthcare Professionals (HCPs), pledging to raise
-awareness of Endometriosis with a goal of improving quality of life of affected women
-                      </h2>
-                    
-                    
+                      <p className="text-base md:text-lg lg:text-xl text-gray-800 leading-relaxed mb-6 text-center">
+                        Alembic Pharmaceuticals Limited is attempting for creating record in Asia Book of Records for 'Maximum no of Healthcare Professionals (HCPs), pledging to raise awareness of Endometriosis with a goal of improving quality of life of affected women.
+                      </p>
+                      
+                      <p className="text-base md:text-lg lg:text-xl text-gray-800 leading-relaxed mb-8 text-center">
+                        By taking this pledge they would be part of creating record in Asia Book of Records for- 'Maximum no of Healthcare Professionals (HCPs), pledging to raise awareness of Endometriosis with a goal of improving quality of life of affected women
+                      </p>
                       <button
                         onClick={() => navigate('/thank-you')}
                         className="prplbtn1 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300"
