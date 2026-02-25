@@ -82,7 +82,6 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
   });
   const [existingDoctorId, setExistingDoctorId] = useState<number | undefined>(undefined);
   const [showExistingDoctorMessage, setShowExistingDoctorMessage] = useState(false);
-  const [searchText, setSearchText] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [nameError, setNameError] = useState('');
   const [registrationError, setRegistrationError] = useState('');
@@ -99,9 +98,9 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Filter existing doctors based on search text
+  // Filter existing doctors based on HCP name input
   const filteredDoctors = existingDoctors.filter(doctor =>
-    doctor.dr_name.toLowerCase().includes(searchText.toLowerCase())
+    doctor.dr_name.toLowerCase().includes(formData.hcpname.toLowerCase())
   );
 
   // Handle clicking outside dropdown to close it
@@ -130,7 +129,6 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
       photo: ''
     });
     setExistingDoctorId(doctor.id);
-    setSearchText('');
     setShowDropdown(false);
     setShowExistingDoctorMessage(true);
     
@@ -338,80 +336,7 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
           </div>
         )}
         
-        {/* Searchable Dropdown for Existing HCPs */}
-        {existingDoctors.length > 0 && (
-          <div className="mb-6 relative" ref={dropdownRef}>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Select Existing HCP (Optional)
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                className={`${inputClasses} pr-10`}
-                placeholder="Search existing HCP..."
-                value={searchText}
-                onChange={(e) => {
-                  setSearchText(e.target.value);
-                  setShowDropdown(true);
-                }}
-                onFocus={() => setShowDropdown(true)}
-                disabled={isLoading}
-              />
-              <svg 
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            
-            {/* Dropdown List */}
-            {showDropdown && filteredDoctors.length > 0 && (
-              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                {filteredDoctors.map((doctor) => (
-                  <button
-                    key={doctor.id}
-                    type="button"
-                    onClick={() => handleSelectExistingDoctor(doctor)}
-                    className="w-full text-left px-4 py-3 hover:bg-gray-100 border-b border-gray-200 last:border-b-0 transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="font-medium text-gray-900">{doctor.dr_name}</div>
-                        {doctor.registration_no && (
-                          <div className="text-xs text-gray-500 mt-0.5">
-                            Reg: {doctor.registration_no}
-                          </div>
-                        )}
-                      </div>
-                      <div className="ml-3">
-                        {doctor.pledge_taken ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            ✓ Pledged
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                            Pending
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-            
-            {showDropdown && searchText && filteredDoctors.length === 0 && (
-              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg p-4 text-center text-gray-500 text-sm">
-                No matching HCP found
-              </div>
-            )}
-          </div>
-        )}
-        
-        <div className="mb-6">
+        <div className="mb-6 relative" ref={dropdownRef}>
           {nameError && (
             <div className="mb-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
               {nameError}
@@ -424,10 +349,53 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
             name="hcpname"
             value={formData.hcpname}
             onChange={handleChange}
+            onFocus={() => existingDoctors.length > 0 && setShowDropdown(true)}
             placeholder="Enter HCP Name"
             disabled={isLoading}
             required
           />
+          
+          {/* Dropdown List */}
+          {showDropdown && existingDoctors.length > 0 && formData.hcpname && filteredDoctors.length > 0 && (
+            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+              {filteredDoctors.map((doctor) => (
+                <button
+                  key={doctor.id}
+                  type="button"
+                  onClick={() => handleSelectExistingDoctor(doctor)}
+                  className="w-full text-left px-4 py-3 hover:bg-gray-100 border-b border-gray-200 last:border-b-0 transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">{doctor.dr_name}</div>
+                      {doctor.registration_no && (
+                        <div className="text-xs text-gray-500 mt-0.5">
+                          Reg: {doctor.registration_no}
+                        </div>
+                      )}
+                    </div>
+                    <div className="ml-3">
+                      {doctor.pledge_taken ? (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          ✓ Pledged
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                          Pending
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+          
+          {showDropdown && existingDoctors.length > 0 && formData.hcpname && filteredDoctors.length === 0 && (
+            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg p-4 text-center text-gray-500 text-sm">
+              No matching HCP found
+            </div>
+          )}
         </div>
 
         <div className="mb-6">
