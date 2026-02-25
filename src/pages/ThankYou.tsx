@@ -10,7 +10,7 @@ const ThankYou: React.FC = () => {
 
   // Format count to 4 digits
   const formatCount = (count: number): string[] => {
-    return count.toString().padStart(4, '0').split('');
+    return count.toString().padStart(5, '0').split('');
   };
 
   // Fetch pledge count from API
@@ -73,7 +73,7 @@ const ThankYou: React.FC = () => {
           <div className="w-[90%] md:w-[80%] flex flex-col gap-4 md:gap-8 justify-center items-center py-8 text-center">
             {/* Live Count Title */}
             <h2 className="hdng1">
-              Live count of pledges taken by<br />the Doctors across India
+              Live count of pledges taken by<br/>the HCPs across India
             </h2>
 
             {/* Counter Display */}
@@ -88,12 +88,13 @@ const ThankYou: React.FC = () => {
             </div>
 
             {/* Thank You Message */}
-            <h1 className="text-5xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-relaxed">
+            {/* <h1 className="text-5xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-relaxed">
               Thank you
-            </h1>
+            </h1> */}
             
             <p className="thanktext">
-              for supporting us and for pledging your participation in <b><i>#ISupportYellowMarch</i></b>
+              Thank you for your participation in <br />
+              <b><i>"I Support Yellow March" Campaign</i></b>
             <br />
              <span>Endometriosis Awareness Month</span>
             </p>
@@ -110,11 +111,11 @@ const ThankYou: React.FC = () => {
             </button>
           </div>
           
-          {/* <footer className="absolute bottom-2 right-4 md:bottom-4 md:right-6 z-10">
-            <p className="text-xs text-gray-600 text-right">
-              All the images used in this material are for illustration purposes only
+          <footer className="absolute right-1 sm:right-2 md:right-4 top-1/2 -translate-y-1/2 z-10">
+            <p className="text-[8px] sm:text-[10px] md:text-xs text-gray-600" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+              ALC/UNI/20262/1001807
             </p>
-          </footer> */}
+          </footer>
         </main>
       </div>
     </div>

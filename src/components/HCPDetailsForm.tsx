@@ -71,6 +71,10 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
     email: ''
   });
   const [nameError, setNameError] = useState('');
+  const [registrationError, setRegistrationError] = useState('');
+  const [pCodeError, setPCodeError] = useState('');
+  const [mobileError, setMobileError] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [cityError, setCityError] = useState('');
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
@@ -89,6 +93,18 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
     // Clear field-specific errors when user starts typing
     if (name === 'hcpname' && nameError) {
       setNameError('');
+    }
+    if (name === 'registrationNo' && registrationError) {
+      setRegistrationError('');
+    }
+    if (name === 'pCode' && pCodeError) {
+      setPCodeError('');
+    }
+    if (name === 'mobile' && mobileError) {
+      setMobileError('');
+    }
+    if (name === 'email' && emailError) {
+      setEmailError('');
     }
     if (name === 'city' && cityError) {
       setCityError('');
@@ -159,8 +175,12 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Reset errors
+    // Reset all errors
     setNameError('');
+    setRegistrationError('');
+    setPCodeError('');
+    setMobileError('');
+    setEmailError('');
     setCityError('');
     
     // Custom validation
@@ -168,6 +188,32 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
     
     if (!formData.hcpname.trim()) {
       setNameError('Please enter HCP name');
+      hasError = true;
+    }
+    
+    if (!formData.registrationNo.trim()) {
+      setRegistrationError('Please enter registration number');
+      hasError = true;
+    }
+    
+    if (!formData.pCode.trim()) {
+      setPCodeError('Please enter P. Code');
+      hasError = true;
+    }
+    
+    if (!formData.mobile.trim()) {
+      setMobileError('Please enter mobile number');
+      hasError = true;
+    } else if (formData.mobile.length !== 10) {
+      setMobileError('Mobile number must be 10 digits');
+      hasError = true;
+    }
+    
+    if (!formData.email.trim()) {
+      setEmailError('Please enter email ID');
+      hasError = true;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setEmailError('Please enter a valid email address');
       hasError = true;
     }
     
@@ -211,10 +257,16 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
             onChange={handleChange}
             placeholder="Enter HCP Name"
             disabled={isLoading}
+            required
           />
         </div>
 
         <div className="mb-6">
+          {registrationError && (
+            <div className="mb-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+              {registrationError}
+            </div>
+          )}
           <input
             type="text"
             className={inputClasses}
@@ -224,10 +276,16 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
             onChange={handleChange}
             placeholder="Enter Registration No."
             disabled={isLoading}
+            required
           />
         </div>
 
         <div className="mb-6">
+          {pCodeError && (
+            <div className="mb-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+              {pCodeError}
+            </div>
+          )}
           <input
             type="text"
             className={inputClasses}
@@ -237,15 +295,18 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
             onChange={handleChange}
             placeholder="Enter P. Code"
             disabled={isLoading}
+            required
           />
         </div>
 
             <div className="mb-6">
-          {/* <label htmlFor="mobile" className={labelClasses}>
-            Mobile
-          </label> */}
+          {mobileError && (
+            <div className="mb-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+              {mobileError}
+            </div>
+          )}
           <input
-            type="number"
+            type="tel"
             className={inputClasses}
             id="mobile"
             name="mobile"
@@ -253,13 +314,18 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
             onChange={handleChange}
             placeholder="Enter Mobile Number"
             disabled={isLoading}
+            maxLength={10}
+            pattern="[0-9]{10}"
+            required
           />
         </div>
 
         <div className="mb-6">
-          {/* <label htmlFor="name" className={labelClasses}>
-            Name
-          </label> */}
+          {emailError && (
+            <div className="mb-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+              {emailError}
+            </div>
+          )}
           <input
             type="email"
             className={inputClasses}
@@ -269,6 +335,7 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
             onChange={handleChange}
             placeholder="Enter Email ID"
             disabled={isLoading}
+            required
           />
         </div>
 
@@ -287,6 +354,7 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
             onChange={handleChange}
             placeholder="Enter City"
             disabled={isLoading}
+            required
           />
         </div>
 

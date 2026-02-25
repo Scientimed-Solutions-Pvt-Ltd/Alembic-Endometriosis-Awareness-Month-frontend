@@ -55,15 +55,16 @@ const TakePledge: React.FC = () => {
   
   // Speech recognition states
   const [isListening, setIsListening] = useState(false);
-  const [transcript, setTranscript] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSupported, setIsSupported] = useState(true);
   
   const navigate = useNavigate();
   const recognitionRef = useRef<ISpeechRecognition | null>(null);
 
-  // Target words to detect from "I support yellow march"
-  const targetWords = ['i support yellow march'];
+  // Target words/phrases to detect from "I support yellow march"
+  // Support partial matches (50% or more words) and variations of "march"
+  const targetPhraseWords = ['i', 'support', 'yellow', 'march'];
+  const marchVariations = ['march', 'mark', 'mar', 'mare', 'mars', 'marsh'];
 
   /**
    * Calculate ribbon progress percentage
@@ -160,13 +161,35 @@ const TakePledge: React.FC = () => {
   };
 
   /**
-   * Checks if any target word is found in the transcript
+   * Checks if transcript matches at least 50% of target phrase words
+   * Also accepts variations of "march"
    * @param text - The transcript text to check
    * @returns boolean indicating if a match was found
    */
   const checkForTargetWords = (text: string): boolean => {
     const lowerText = text.toLowerCase();
-    return targetWords.some(word => lowerText.includes(word));
+    const words = lowerText.split(/\s+/);
+    
+    let matchCount = 0;
+    
+    // Check for "i"
+    if (words.includes('i')) matchCount++;
+    
+    // Check for "support"
+    if (words.includes('support')) matchCount++;
+    
+    // Check for "yellow"
+    if (words.includes('yellow')) matchCount++;
+    
+    // Check for "march" or its variations
+    const hasMarchVariation = marchVariations.some(variation => 
+      words.some(word => word.includes(variation) || variation.includes(word))
+    );
+    if (hasMarchVariation) matchCount++;
+    
+    // Need at least 50% match (2 out of 4 words)
+    const requiredMatches = Math.ceil(targetPhraseWords.length * 0.5);
+    return matchCount >= requiredMatches;
   };
 
   /**
@@ -279,7 +302,6 @@ const TakePledge: React.FC = () => {
     recognition.onstart = () => {
       setIsListening(true);
       setError(null);
-      setTranscript('');
       console.log('Speech recognition started');
     };
 
@@ -299,7 +321,6 @@ const TakePledge: React.FC = () => {
       }
 
       const combinedTranscript = finalTranscript || interimTranscript;
-      setTranscript(combinedTranscript);
       console.log('Transcript:', combinedTranscript);
 
       // Check if any target word is detected
@@ -502,12 +523,6 @@ being stored/used through such portal/platform by Alembic and / or third party.
                               </svg>
                             </div>
                           </div>
-                          {/* Transcript display */}
-                          {transcript && (
-                            <p className="mt-4 text-sm text-gray-600 italic">
-                              Heard: "{transcript}"
-                            </p>
-                          )}
                         </div>
                       )}
                       

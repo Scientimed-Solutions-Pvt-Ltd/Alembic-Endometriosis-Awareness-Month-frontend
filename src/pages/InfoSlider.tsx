@@ -42,7 +42,7 @@ const Slide1: React.FC = () => (
       {/* Right Side - Text Content */}
       <div className="contentdiv">
         <h1 className="endoh1 font-light text-white leading-tight">
-          Endometriosis is silent...
+          Endometriosis patients suffer silently…
         </h1>
         <h2 className="endoh2 font-bold text-white mb-2 sm:mb-3 md:mb-6 leading-tight">
           yet echoes in pain and distress.
@@ -75,8 +75,9 @@ const Slide1: React.FC = () => (
     {/* Citation */}
     <div className="absolute bottom-1 sm:bottom-12 md:bottom-12 lg:bottom-8 left-[50%] sm:left-[60%] md:left-[60%] lg:left-[60%] -translate-x-1/2 z-20 px-2 sm:px-4 text-left ref">
       <p className="text-white/70 text-[8px] sm:text-[10px] md:text-[12px]">
-        *Patel M. Recent trends in medical management of endometriosis.<br />
-        <em>J Obstet Gynaecol India.</em> 2024;74(6):479-83
+        Patel M. Recent trends in medical management of<br />
+        endometriosis. <em>J Obstet Gynaecol India.</em> 2024;74(6):479-83
+        
       </p>
     </div>
   </div>
@@ -248,27 +249,6 @@ const InfoSlider: React.FC = () => {
               ))}
             </div>
 
-            {/* Navigation Arrows */}
-            <button
-              onClick={prevSlide}
-              className="absolute left-4 md:left-12 top-1/2 -translate-y-1/2 z-30 bg-white/0 hover:bg-white/40 text-white p-2 md:p-2 rounded-full transition-all duration-300 prevbtn"
-              aria-label="Previous slide"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-10 md:w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-
-            <button
-              onClick={nextSlide}
-              className="absolute right-4 md:right-12 top-1/2 -translate-y-1/2 z-30 bg-white/0 hover:bg-white/40 text-white p-2 md:p-2 rounded-full transition-all duration-300 nextbtn"
-              aria-label="Next slide"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-10 md:w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-
             {/* Bottom Controls */}
             <div className="absolute bottom-8 md:bottom-4 lg:bottom-4 right-4 md:right-8 z-30 flex flex-col items-end gap-4">
               {/* Dot Indicators */}
@@ -289,7 +269,13 @@ const InfoSlider: React.FC = () => {
               
               {/* Next Button */}
               <button
-                onClick={() => navigate('/take-pledge')}
+                onClick={() => {
+                  if (currentSlide < slides.length - 1) {
+                    nextSlide();
+                  } else {
+                    navigate('/take-pledge');
+                  }
+                }}
                 className="prplbtn2 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 mt-6"
               >
                 Next 
