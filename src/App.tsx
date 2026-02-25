@@ -6,6 +6,7 @@ import Carousel from './pages/Carousel';
 import InfoSlider from './pages/InfoSlider';
 import TakePledge from './pages/TakePledge';
 import ThankYou from './pages/ThankYou';
+import InstallPrompt from './components/InstallPrompt';
 
 // Admin imports
 import AdminLayout from './admin/components/AdminLayout';
@@ -27,6 +28,7 @@ import HqsForm from './admin/pages/HqsForm';
 function App() {
   return (
     <Router>
+      <InstallPrompt />
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<Home />} />
