@@ -40,9 +40,7 @@ const HCPDetails: React.FC = () => {
           existingDoctorId,
           data.hcpname,
           data.city,
-          data.registrationNo || undefined,
           data.mobile || undefined,
-          data.email || undefined,
           data.pCode || undefined
         );
         console.log('Doctor updated successfully:', response.data);
@@ -50,9 +48,7 @@ const HCPDetails: React.FC = () => {
         response = await addDoctor(
           data.hcpname,
           data.city,
-          data.registrationNo || undefined,
           data.mobile || undefined,
-          data.email || undefined,
           data.pCode || undefined
         );
         console.log('Doctor created successfully:', response.data);

@@ -20,12 +20,10 @@ interface HCPDetailsFormProps {
 
 interface FormData {
   hcpname: string;
-  registrationNo: string;
   pCode: string;
   city: string;
   photo: string;
   mobile: string;
-  email: string;
 }
 
 interface CroppedAreaPixels {
@@ -73,21 +71,17 @@ const getCroppedImg = async (imageSrc: string, pixelCrop: CroppedAreaPixels): Pr
 const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, error, existingDoctors = [] }) => {
   const [formData, setFormData] = useState<FormData>({
     hcpname: '',
-    registrationNo: '',
     pCode: '',
     city: '',
     photo: '',
-    mobile: '',
-    email: ''
+    mobile: ''
   });
   const [existingDoctorId, setExistingDoctorId] = useState<number | undefined>(undefined);
   const [showExistingDoctorMessage, setShowExistingDoctorMessage] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [nameError, setNameError] = useState('');
-  const [registrationError, setRegistrationError] = useState('');
   const [pCodeError, setPCodeError] = useState('');
   const [mobileError, setMobileError] = useState('');
-  const [emailError, setEmailError] = useState('');
   const [cityError, setCityError] = useState('');
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
@@ -121,9 +115,7 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
   const handleSelectExistingDoctor = (doctor: typeof existingDoctors[0]) => {
     setFormData({
       hcpname: doctor.dr_name,
-      registrationNo: doctor.registration_no || '',
       mobile: doctor.mobile || '',
-      email: doctor.email || '',
       pCode: doctor.p_code || '',
       city: doctor.city || '',
       photo: ''
@@ -149,9 +141,7 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
         // Populate form with existing doctor data
         setFormData(prev => ({
           ...prev,
-          registrationNo: matchingDoctor.registration_no || '',
           mobile: matchingDoctor.mobile || '',
-          email: matchingDoctor.email || '',
           pCode: matchingDoctor.p_code || '',
           city: matchingDoctor.city || '',
         }));
@@ -182,17 +172,11 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
     if (name === 'hcpname' && nameError) {
       setNameError('');
     }
-    if (name === 'registrationNo' && registrationError) {
-      setRegistrationError('');
-    }
     if (name === 'pCode' && pCodeError) {
       setPCodeError('');
     }
     if (name === 'mobile' && mobileError) {
       setMobileError('');
-    }
-    if (name === 'email' && emailError) {
-      setEmailError('');
     }
     if (name === 'city' && cityError) {
       setCityError('');
@@ -265,10 +249,8 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
     
     // Reset all errors
     setNameError('');
-    setRegistrationError('');
     setPCodeError('');
     setMobileError('');
-    setEmailError('');
     setCityError('');
     
     // Custom validation
@@ -276,11 +258,6 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
     
     if (!formData.hcpname.trim()) {
       setNameError('Please enter HCP name');
-      hasError = true;
-    }
-    
-    if (!formData.registrationNo.trim()) {
-      setRegistrationError('Please enter registration number');
       hasError = true;
     }
     
@@ -294,14 +271,6 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
       hasError = true;
     } else if (formData.mobile.length !== 10) {
       setMobileError('Mobile number must be 10 digits');
-      hasError = true;
-    }
-    
-    if (!formData.email.trim()) {
-      setEmailError('Please enter email ID');
-      hasError = true;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      setEmailError('Please enter a valid email address');
       hasError = true;
     }
     
@@ -399,25 +368,6 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
         </div>
 
         <div className="mb-6">
-          {registrationError && (
-            <div className="mb-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
-              {registrationError}
-            </div>
-          )}
-          <input
-            type="text"
-            className={inputClasses}
-            id="registrationNo"
-            name="registrationNo"
-            value={formData.registrationNo}
-            onChange={handleChange}
-            placeholder="Enter Registration No."
-            disabled={isLoading}
-            required
-          />
-        </div>
-
-        <div className="mb-6">
           {pCodeError && (
             <div className="mb-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
               {pCodeError}
@@ -453,25 +403,6 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
             disabled={isLoading}
             maxLength={10}
             pattern="[0-9]{10}"
-            required
-          />
-        </div>
-
-        <div className="mb-6">
-          {emailError && (
-            <div className="mb-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
-              {emailError}
-            </div>
-          )}
-          <input
-            type="email"
-            className={inputClasses}
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Enter Email ID"
-            disabled={isLoading}
             required
           />
         </div>

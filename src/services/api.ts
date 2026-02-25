@@ -123,9 +123,7 @@ export interface DoctorListResponse {
 export const addDoctor = async (
   drName: string,
   city: string,
-  registrationNo?: string,
   mobile?: string,
-  email?: string,
   pCode?: string
 ): Promise<DoctorResponse> => {
   const userData = getUserData();
@@ -142,9 +140,7 @@ export const addDoctor = async (
       dr_name: drName,
       city: city,
       field_team_id: userData.id,
-      ...(registrationNo && { registration_no: registrationNo }),
       ...(mobile && { mobile: mobile }),
-      ...(email && { email: email }),
       ...(pCode && { p_code: pCode }),
     }),
   });
@@ -296,9 +292,7 @@ export const updateDoctor = async (
   id: number,
   drName: string,
   city: string,
-  registrationNo?: string,
   mobile?: string,
-  email?: string,
   pCode?: string
 ): Promise<DoctorResponse> => {
   const response = await fetch(`${API_BASE_URL}/doctors/${id}`, {
@@ -309,9 +303,7 @@ export const updateDoctor = async (
     body: JSON.stringify({
       dr_name: drName,
       city: city,
-      ...(registrationNo && { registration_no: registrationNo }),
       ...(mobile && { mobile: mobile }),
-      ...(email && { email: email }),
       ...(pCode && { p_code: pCode }),
     }),
   });
