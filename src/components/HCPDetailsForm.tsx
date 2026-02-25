@@ -1,11 +1,21 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Cropper from 'react-easy-crop';
 
 interface HCPDetailsFormProps {
   onBack?: () => void;
-  onSubmit?: (data: FormData) => void;
+  onSubmit?: (data: FormData, existingDoctorId?: number) => void;
   isLoading?: boolean;
   error?: string;
+  existingDoctors?: Array<{
+    id: number;
+    dr_name: string;
+    registration_no: string | null;
+    mobile: string | null;
+    email: string | null;
+    p_code: string | null;
+    city: string;
+    pledge_taken: boolean;
+  }>;
 }
 
 interface FormData {
@@ -60,7 +70,7 @@ const getCroppedImg = async (imageSrc: string, pixelCrop: CroppedAreaPixels): Pr
   return canvas.toDataURL('image/jpeg');
 };
 
-const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, error }) => {
+const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, error, existingDoctors = [] }) => {
   const [formData, setFormData] = useState<FormData>({
     hcpname: '',
     registrationNo: '',
@@ -70,6 +80,10 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
     mobile: '',
     email: ''
   });
+  const [existingDoctorId, setExistingDoctorId] = useState<number | undefined>(undefined);
+  const [showExistingDoctorMessage, setShowExistingDoctorMessage] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
   const [nameError, setNameError] = useState('');
   const [registrationError, setRegistrationError] = useState('');
   const [pCodeError, setPCodeError] = useState('');
@@ -83,6 +97,82 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<CroppedAreaPixels | null>(null);
   const [showCropper, setShowCropper] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Filter existing doctors based on search text
+  const filteredDoctors = existingDoctors.filter(doctor =>
+    doctor.dr_name.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+  // Handle clicking outside dropdown to close it
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Handle selecting an existing doctor from dropdown
+  const handleSelectExistingDoctor = (doctor: typeof existingDoctors[0]) => {
+    setFormData({
+      hcpname: doctor.dr_name,
+      registrationNo: doctor.registration_no || '',
+      mobile: doctor.mobile || '',
+      email: doctor.email || '',
+      pCode: doctor.p_code || '',
+      city: doctor.city || '',
+      photo: ''
+    });
+    setExistingDoctorId(doctor.id);
+    setSearchText('');
+    setShowDropdown(false);
+    setShowExistingDoctorMessage(true);
+    
+    // Hide message after 3 seconds
+    setTimeout(() => {
+      setShowExistingDoctorMessage(false);
+    }, 3000);
+  };
+
+  // Check for existing doctor when name changes
+  useEffect(() => {
+    if (formData.hcpname.trim() && existingDoctors.length > 0 && !existingDoctorId) {
+      const matchingDoctor = existingDoctors.find(
+        doctor => doctor.dr_name.toLowerCase().trim() === formData.hcpname.toLowerCase().trim()
+      );
+
+      if (matchingDoctor) {
+        // Populate form with existing doctor data
+        setFormData(prev => ({
+          ...prev,
+          registrationNo: matchingDoctor.registration_no || '',
+          mobile: matchingDoctor.mobile || '',
+          email: matchingDoctor.email || '',
+          pCode: matchingDoctor.p_code || '',
+          city: matchingDoctor.city || '',
+        }));
+        setExistingDoctorId(matchingDoctor.id);
+        setShowExistingDoctorMessage(true);
+        
+        // Hide message after 3 seconds
+        setTimeout(() => {
+          setShowExistingDoctorMessage(false);
+        }, 3000);
+      } else {
+        // Clear existing doctor ID if name doesn't match
+        if (existingDoctorId) {
+          setExistingDoctorId(undefined);
+          setShowExistingDoctorMessage(false);
+        }
+      }
+    }
+  }, [formData.hcpname, existingDoctors]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -227,7 +317,7 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
     }
     
     if (onSubmit) {
-      onSubmit(formData);
+      onSubmit(formData, existingDoctorId);
     }
   };
 
@@ -242,6 +332,85 @@ const HCPDetailsForm: React.FC<HCPDetailsFormProps> = ({ onSubmit, isLoading, er
             {error}
           </div>
         )}
+        {showExistingDoctorMessage && (
+          <div className="mb-4 p-3 bg-blue-100 border border-blue-400 text-blue-700 rounded-lg text-sm">
+            <strong>Found existing HCP!</strong> Details loaded. You can update them if needed.
+          </div>
+        )}
+        
+        {/* Searchable Dropdown for Existing HCPs */}
+        {existingDoctors.length > 0 && (
+          <div className="mb-6 relative" ref={dropdownRef}>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Select Existing HCP (Optional)
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                className={`${inputClasses} pr-10`}
+                placeholder="Search existing HCP..."
+                value={searchText}
+                onChange={(e) => {
+                  setSearchText(e.target.value);
+                  setShowDropdown(true);
+                }}
+                onFocus={() => setShowDropdown(true)}
+                disabled={isLoading}
+              />
+              <svg 
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            
+            {/* Dropdown List */}
+            {showDropdown && filteredDoctors.length > 0 && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                {filteredDoctors.map((doctor) => (
+                  <button
+                    key={doctor.id}
+                    type="button"
+                    onClick={() => handleSelectExistingDoctor(doctor)}
+                    className="w-full text-left px-4 py-3 hover:bg-gray-100 border-b border-gray-200 last:border-b-0 transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="font-medium text-gray-900">{doctor.dr_name}</div>
+                        {doctor.registration_no && (
+                          <div className="text-xs text-gray-500 mt-0.5">
+                            Reg: {doctor.registration_no}
+                          </div>
+                        )}
+                      </div>
+                      <div className="ml-3">
+                        {doctor.pledge_taken ? (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            ✓ Pledged
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            Pending
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+            
+            {showDropdown && searchText && filteredDoctors.length === 0 && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg p-4 text-center text-gray-500 text-sm">
+                No matching HCP found
+              </div>
+            )}
+          </div>
+        )}
+        
         <div className="mb-6">
           {nameError && (
             <div className="mb-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">

@@ -600,13 +600,6 @@ being stored/used through such portal/platform by Alembic and / or third party.
               All the images used in this material are for illustration purposes only
             </p>
           </footer>
-          
-          {/* Disclaimer - Bottom Left */}
-          <div className="absolute bottom-1 sm:bottom-2 md:bottom-4 left-2 sm:left-4 md:left-6 z-10 max-w-[100%] sm:max-w-[100%] md:max-w-[100%]">
-            <p className="text-[10px] text-gray-800 leading-tight">
-             <b>Disclaimer:</b> Mention by this campaign, Alembic attempting for creating record in Asia Book of Records for Endometriosis Awareness Month
-            </p>
-          </div>
         </main>
       </div>
       </div>

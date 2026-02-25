@@ -290,3 +290,36 @@ export const getDoctorsByFieldTeam = async (fieldTeamId: number): Promise<Doctor
   console.log('Doctors retrieved successfully:', data);
   return data;
 };
+
+// Update Doctor API
+export const updateDoctor = async (
+  id: number,
+  drName: string,
+  city: string,
+  registrationNo?: string,
+  mobile?: string,
+  email?: string,
+  pCode?: string
+): Promise<DoctorResponse> => {
+  const response = await fetch(`${API_BASE_URL}/doctors/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      dr_name: drName,
+      city: city,
+      ...(registrationNo && { registration_no: registrationNo }),
+      ...(mobile && { mobile: mobile }),
+      ...(email && { email: email }),
+      ...(pCode && { p_code: pCode }),
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Failed to update doctor');
+  }
+
+  return response.json();
+};

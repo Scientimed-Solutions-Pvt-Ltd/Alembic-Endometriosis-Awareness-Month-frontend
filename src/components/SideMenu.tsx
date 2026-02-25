@@ -53,7 +53,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, userName }) => {
                 onClick={onClose}
                 className="block px-8 py-4 text-gray-800 no-underline text-lg font-medium transition-all duration-300 border-l-4 border-transparent hover:bg-gradient-to-r hover:from-primary/10 hover:to-transparent hover:border-l-primary hover:text-primary hover:pl-10"
               >
-                HCP Details
+                Add HCP
               </Link>
             </li>
 

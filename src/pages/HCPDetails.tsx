@@ -5,13 +5,14 @@ import HCPDetailsForm from '../components/HCPDetailsForm';
 import SideMenu from '../components/SideMenu';
 import eamLogo from '../assets/images/EAM-logo.png';
 import bgImage from '../assets/images/bg01.png';
-import { getUserData, addDoctor, saveDoctorData } from '../services/api';
+import { getUserData, addDoctor, updateDoctor, saveDoctorData, getDoctorsByFieldTeam } from '../services/api';
 
 const HCPDetails: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [userName, setUserName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [existingDoctors, setExistingDoctors] = useState<any[]>([]);
   const navigate = useNavigate();
 
   const toggleMenu = () => {
@@ -26,29 +27,45 @@ const HCPDetails: React.FC = () => {
     navigate('/');
   };
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: any, existingDoctorId?: number) => {
     setIsLoading(true);
     setError('');
 
     try {
-      const response = await addDoctor(
-        data.hcpname,
-        data.city,
-        data.registrationNo || undefined,
-        data.mobile || undefined,
-        data.email || undefined,
-        data.pCode || undefined
-      );
+      let response;
+      
+      // If existingDoctorId is provided, update the doctor, otherwise create new
+      if (existingDoctorId) {
+        response = await updateDoctor(
+          existingDoctorId,
+          data.hcpname,
+          data.city,
+          data.registrationNo || undefined,
+          data.mobile || undefined,
+          data.email || undefined,
+          data.pCode || undefined
+        );
+        console.log('Doctor updated successfully:', response.data);
+      } else {
+        response = await addDoctor(
+          data.hcpname,
+          data.city,
+          data.registrationNo || undefined,
+          data.mobile || undefined,
+          data.email || undefined,
+          data.pCode || undefined
+        );
+        console.log('Doctor created successfully:', response.data);
+      }
 
       if (response.success) {
         // Save doctor data to localStorage
-        console.log('Doctor created successfully:', response.data);
         saveDoctorData(response.data);
         console.log('Doctor data saved to localStorage');
         // Navigate to info slider page on success
         navigate('/info-slider');
       } else {
-        setError(response.message || 'Failed to add HCP details');
+        setError(response.message || 'Failed to save HCP details');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit HCP details');
@@ -58,7 +75,7 @@ const HCPDetails: React.FC = () => {
     }
   };
 
-  // Check if user is logged in
+  // Check if user is logged in and fetch existing doctors
   useEffect(() => {
     const userData = getUserData();
     if (!userData) {
@@ -67,6 +84,22 @@ const HCPDetails: React.FC = () => {
     } else {
       // Set the MR name from user data
       setUserName(userData.name);
+      
+      // Fetch existing doctors for this field team
+      const fetchDoctors = async () => {
+        try {
+          const response = await getDoctorsByFieldTeam(userData.id);
+          if (response.success && response.data) {
+            setExistingDoctors(response.data);
+            console.log('Existing doctors loaded:', response.data);
+          }
+        } catch (err) {
+          console.error('Failed to fetch existing doctors:', err);
+          // Don't show error to user, just log it
+        }
+      };
+      
+      fetchDoctors();
     }
   }, [navigate]);
 
@@ -110,6 +143,7 @@ const HCPDetails: React.FC = () => {
                       onSubmit={handleSubmit}
                       isLoading={isLoading}
                       error={error}
+                      existingDoctors={existingDoctors}
                     />
                   </div>
                 </div>
