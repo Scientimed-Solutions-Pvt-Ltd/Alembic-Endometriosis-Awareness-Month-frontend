@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
-import logoImage from '../assets/images/logo.png';
 import { getUserData } from '../services/api';
 
 // Import all carousel images
@@ -91,11 +90,6 @@ const Carousel: React.FC = () => {
       {/* Content */}
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header onMenuClick={toggleMenu} userName={userName} />
-        
-        {/* Logo in center of header */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 z-20 pt-4 md:pt-0">
-          <img src={logoImage} alt="Logo" className="h-12 md:h-24 w-auto" />
-        </div>
         
         <SideMenu isOpen={isMenuOpen} onClose={closeMenu} userName={userName} />
         

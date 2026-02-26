@@ -561,6 +561,51 @@ max-width: 600px;
   .sld2hd1, .sld2hd1 span {
     font-size: 32px;
   }
+  
+  /* Pledge button for 1200-1400px */
+  .pldgbtn {
+    padding: 0px 20px 8px;
+    font-size: 22px;
+    border-radius: 30px;
+  }
+  
+  .clickgif {
+    top: 15px;
+    right: -5px;
+    width: 50px;
+    height: 55px;
+  }
+  
+  /* TakePledge page compact layout for 1200-1400px */
+  .pledge-text {
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .pledge-heading {
+    font-size: 16px !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .pledge-subheading {
+    font-size: 18px !important;
+    margin-bottom: 6px !important;
+  }
+  
+  .pledge-container {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+    gap: 8px !important;
+  }
+  
+  /* Ribbon size for 1200-1400px */
+  
+  
+  .ribbon-wrapper img {
+    max-height: 370px !important;
+    width: auto !important;
+  }
 }
 
 /* Large desktop screens (1400px and above) */
@@ -685,36 +730,38 @@ max-width: 600px;
   .contentdiv {
     display: block;
     position: absolute;
-    right: 10%;
-    top: 10%;
+    right: 2%;
+    left: auto;
+    top: 8%;
+    width: 55%;
 }
   .endoh1 {
-    font-size: 70px;
+    font-size: 50px;
 }
   .endoh2 {
-    font-size: 55px;
+    font-size: 40px;
 }
   .endoh3 {
-    font-size: 70px;
+    font-size: 50px;
 }
 
 .txtimgs1{
-  height: 100px;
+  height: 70px;
   max-width: 100%;
-  max-height: 100px;
+  max-height: 70px;
 }
 .endoh4{
-  font-size: 100px;
+  font-size: 70px;
 }
 .wmntxt {
     color: #facc15;
-    margin-left: 213px;
-    margin-top: -50px;
-    font-size: 60px;
+    margin-left: 150px;
+    margin-top: -35px;
+    font-size: 45px;
 }
 
 .mapimg {
-    height: 300px;
+    height: 200px;
 }
 .ref{
   z-index: 99;
@@ -723,10 +770,10 @@ max-width: 600px;
 
 
 .sld1rbndiv {
-        max-width: 610px;
-        bottom: 72px;
+        max-width: 450px;
+        bottom: 50px;
 }
-.prplbtn2{font-size: 40px; border-radius: 50px;}
+.prplbtn2{font-size: 30px; border-radius: 50px;}
 
 .sldcontainer {
   width: 100%;

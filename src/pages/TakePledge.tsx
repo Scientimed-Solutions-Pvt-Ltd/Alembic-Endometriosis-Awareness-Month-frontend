@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
 import RibbonProgress from '../components/RibbonProgress';
-import logoImage from '../assets/images/logo.png';
 import clickGif from '../assets/images/click.gif';
 import { getUserData, getDoctorData, acceptTerms, saveDoctorData, takePledge, getPledgeCount } from '../services/api';
 
@@ -47,7 +46,6 @@ const TakePledge: React.FC = () => {
   const [userName, setUserName] = useState('');
   const [isAcceptingTerms, setIsAcceptingTerms] = useState(false);
   const [doctorName, setDoctorName] = useState('');
-  const [registrationNo, setRegistrationNo] = useState('');
   
   // Pledge count states
   const [_currentPledgeCount, setCurrentPledgeCount] = useState(0);
@@ -102,7 +100,6 @@ const TakePledge: React.FC = () => {
     
     if (doctorData) {
       setDoctorName(doctorData.dr_name);
-      setRegistrationNo(doctorData.registration_no || 'N/A');
       
       if (doctorData.terms_accepted) {
         // Terms already accepted, don't show popup
@@ -501,28 +498,20 @@ being stored/used through such portal/platform by Alembic and / or third party.
       {/* Main Page Content - Only visible after consent */}
       <div className={showConsent ? 'visible' : 'visible'}>
         {/* Gradient Header Overlay */}
-        <div className="absolute top-0 left-0 right-0 h-20 md:h-24 bg-gradient-to-r from-amber-500 via-rose-500 via-60% to-purple-600" />
+        <div className="absolute top-0 left-0 right-0 h-14 lg:h-16 xl:h-20 2xl:h-24 bg-gradient-to-r from-amber-500 via-rose-500 via-60% to-purple-600" />
         
         {/* Content */}
         <div className="relative z-10 flex flex-col min-h-screen">
         <Header onMenuClick={toggleMenu} userName={userName} />
         <SideMenu isOpen={isMenuOpen} onClose={closeMenu} userName={userName} />
-      {/* Logo in center of header */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 z-20 pt-4 md:pt-0 hidden sm:block">
-          <img src={logoImage} alt="Logo" className="endologo" />
-        </div>
-
-         <div className="top-0 left-0 right-0 h-auto bg-gradient-to-r from-amber-500 via-rose-500 via-60% to-purple-600 block sm:hidden">
-          <img src={logoImage} alt="Logo" className="endologo2" />
-        </div>
         
         {/* Doctor Info - Right side below header */}
-        <div className="absolute top-28 md:top-28 right-2 sm:right-4 md:right-6 z-20 text-right">
-          <p className="text-[14px] sm:text-[15px] md:text-[15px] text-gray-900 font-medium">Doctor Name: <span className="font-normal">{doctorName || 'N/A'}</span> <br className='block sm:hidden' />&nbsp;&nbsp;&nbsp; Registration No.: <span className="font-normal">{registrationNo || 'N/A'}</span></p>
+        <div className="relative lg:absolute lg:top-20 xl:top-28 right-2 lg:right-6 z-10 text-right px-4 py-2 lg:p-0 xl:right-10">
+          <p className="text-[12px] lg:text-[14px] xl:text-[15px] text-gray-900 font-medium">Doctor Name: <span className="font-normal">{doctorName || 'N/A'}</span></p>
         </div>
         
        <main className="flex-1 flex items-center justify-center text-center">
-  <div className="w-[90%] lg:w-[80%] flex flex-col md:flex-row gap-2 lg:gap-4 justify-center items-center py-4 lg:py-8 text-center">
+  <div className="w-[90%] lg:w-[80%] flex flex-col md:flex-row gap-2 lg:gap-4 justify-center items-center py-2 lg:py-4 xl:py-8 text-center pledge-container">
               
 
                 {/* Text Content */}
@@ -531,15 +520,15 @@ being stored/used through such portal/platform by Alembic and / or third party.
                   {!pledgeCompleted && !isAnimating ? (
                     <>
                       {/* Show pledge content only before success */}
-                      <p className="text-sm lg:text-base xl:text-lg text-gray-800 leading-relaxed mb-3 lg:mb-6 text-center">
+                      <p className="text-sm lg:text-base xl:text-lg text-gray-800 leading-snug lg:leading-relaxed mb-2 lg:mb-4 xl:mb-6 text-center pledge-text">
                         Alembic Pharmaceuticals Limited is attempting for creating record in Asia Book of Records for 'Maximum no of Healthcare Professionals (HCPs), pledging to raise awareness of Endometriosis with a goal of improving quality of life of affected women.
                       </p>
                       
-                      <p className="text-sm lg:text-base xl:text-lg text-gray-800 leading-relaxed mb-4 lg:mb-8 text-center">
+                      <p className="text-sm lg:text-base xl:text-lg text-gray-800 leading-snug lg:leading-relaxed mb-2 lg:mb-4 xl:mb-8 text-center pledge-text">
                         By taking this pledge they would be part of creating record in Asia Book of Records for- 'Maximum no of Healthcare Professionals (HCPs), pledging to raise awareness of Endometriosis with a goal of improving quality of life of affected women
                       </p>
                       
-                      <p className="text-lg lg:text-xl xl:text-2xl font-bold text-purple-900 leading-tight mb-4 lg:mb-8 text-center">
+                      <p className="text-base lg:text-lg xl:text-2xl font-bold text-purple-900 leading-tight mb-2 lg:mb-4 xl:mb-8 text-center pledge-heading">
                         {isListening ? 'Listening... Say the pledge!' : 'Click here and say'}
                       </p>
                       
@@ -577,7 +566,7 @@ being stored/used through such portal/platform by Alembic and / or third party.
                       <button
                         onClick={handlePledgeClick}
                         disabled={!isSupported}
-                        className={`relative inline-flex items-center gap-2 rounded-full shadow-lg duration-300 mb-8 pldgbtn ${
+                        className={`relative inline-flex items-center gap-2 rounded-full shadow-lg duration-300 mb-2 lg:mb-4 xl:mb-8 pldgbtn ${
                           isListening 
                             ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
                             : 'hover:shadow-xl hover:-translate-y-1'
@@ -590,7 +579,7 @@ being stored/used through such portal/platform by Alembic and / or third party.
                         )}
                       </button>
                       
-                      <p className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900 leading-relaxed mb-4 text-center">
+                      <p className="text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-purple-900 leading-relaxed mb-2 lg:mb-4 text-center pledge-subheading">
                         {isListening ? 'Say "I Support Yellow March"' : 'to take pledge'}
                       </p>
                       
@@ -607,11 +596,11 @@ being stored/used through such portal/platform by Alembic and / or third party.
                   ) : (
                     /* Just Continue button - Shown after pledge is detected */
                     <div className="flex flex-col items-center justify-center animate-fade-in">
-                      <p className="text-base md:text-lg lg:text-xl text-gray-800 leading-relaxed mb-6 text-center">
+                      <p className="text-sm md:text-base lg:text-lg xl:text-xl text-gray-800 leading-snug lg:leading-relaxed mb-2 lg:mb-4 xl:mb-6 text-center pledge-text">
                         Alembic Pharmaceuticals Limited is attempting for creating record in Asia Book of Records for 'Maximum no of Healthcare Professionals (HCPs), pledging to raise awareness of Endometriosis with a goal of improving quality of life of affected women.
                       </p>
                       
-                      <p className="text-base md:text-lg lg:text-xl text-gray-800 leading-relaxed mb-8 text-center">
+                      <p className="text-sm md:text-base lg:text-lg xl:text-xl text-gray-800 leading-snug lg:leading-relaxed mb-2 lg:mb-4 xl:mb-8 text-center pledge-text">
                         By taking this pledge they would be part of creating record in Asia Book of Records for- 'Maximum no of Healthcare Professionals (HCPs), pledging to raise awareness of Endometriosis with a goal of improving quality of life of affected women
                       </p>
                       <button
@@ -625,11 +614,11 @@ being stored/used through such portal/platform by Alembic and / or third party.
                 </div>
 
                   {/* Gray Awareness Ribbon with Progress */}
-                 <div className="w-full md:w-[25%] text-center">
+                 <div className="w-full md:w-[25%] text-center z-20">
                    <RibbonProgress
                      percentage={pledgeCompleted || isAnimating ? 100 : 0}
                      transitionDuration={2000}
-                     className={`m-auto transition-transform duration-700 ease-out ${
+                     className={`m-auto ribbon-wrapper transition-transform duration-700 ease-out ${
                        isAnimating 
                          ? 'scale-105' 
                          : 'scale-100'

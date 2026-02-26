@@ -4,12 +4,11 @@ import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
 import bgImage2 from '../assets/images/slider-bg1.png';
 import bgImage3 from '../assets/images/slider-bg2.png';
-import logoImage from '../assets/images/logo.png';
 //import ladyImage from '../assets/images/AEAMAWR-lady.png';
 import ribbonImage from '../assets/images/ribbon-bg.png';
 import ribbonImage2 from '../assets/images/ribbon2.png';
 import numberImage from '../assets/images/numberImage.png';
-import map from '../assets/images/map.png';
+// import map from '../assets/images/map.png';
 import dashedCircleImage from '../assets/images/sld2img1.png';
 import ramimg from '../assets/images/sld2img2.png';
 import icon1 from '../assets/images/sld2ico1.png';
@@ -65,10 +64,10 @@ const Slide1: React.FC = () => (
           </div>
        
         
-        {/* India Map (visible on all screens) */}
+        {/* India Map (visible on all screens)
         <div className="text-right float-right">
           <img src={map} alt="India Map" className="w-auto mapimg" />
-        </div>
+        </div> */}
       </div>
     </div>
 
@@ -218,15 +217,6 @@ const InfoSlider: React.FC = () => {
       {/* Content */}
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header onMenuClick={toggleMenu} userName={userName} />
-        
-        {/* Logo in center of header */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 z-20 pt-4 md:pt-0 hidden sm:block">
-          <img src={logoImage} alt="Logo" className="endologo" />
-        </div>
-
-         <div className="top-0 left-0 right-0 h-auto bg-gradient-to-r from-amber-500 via-rose-500 via-60% to-purple-600 block sm:hidden">
-          <img src={logoImage} alt="Logo" className="endologo2" />
-        </div>
         
         <SideMenu isOpen={isMenuOpen} onClose={closeMenu} userName={userName} />
         

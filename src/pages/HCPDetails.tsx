@@ -120,7 +120,7 @@ const HCPDetails: React.FC = () => {
         style={{ backgroundImage: `url(${bgImage})` }}
       />
       {/* Gradient Header Overlay */}
-      <div className="absolute top-0 left-0 right-0 h-20 md:h-24 bg-gradient-to-r from-amber-500 via-rose-500 via-60% to-purple-600" />
+      <div className="absolute top-0 left-0 right-0 h-14 lg:h-16 xl:h-20 2xl:h-24 bg-gradient-to-r from-amber-500 via-rose-500 via-60% to-purple-600" />
 
       {/* Content */}
       <div className="relative z-10 flex flex-col min-h-screen">
@@ -128,12 +128,12 @@ const HCPDetails: React.FC = () => {
         <SideMenu isOpen={isMenuOpen} onClose={closeMenu} userName={userName} />
         
         <main className="flex-1 flex flex-col relative overflow-hidden">
-          <div className="flex-1 px-4 md:px-8 lg:px-16 py-8">
+          <div className="flex-1 px-4 md:px-8 lg:px-16 py-0 lg:py-1 xl:py-4">
             <div className="h-full flex items-center">
               <div className="w-full">
-                <div className="p-4 md:p-8">
-                  <img src={eamLogo} alt="EAM Logo" className="mb-4 eam-logo" />
-                  <div className="mt-6">
+                <div className="p-1 lg:p-2 xl:p-6">
+                  <img src={eamLogo} alt="EAM Logo" className="mb-1 lg:mb-2 eam-logo max-h-12 lg:max-h-16 xl:max-h-24" />
+                  <div className="mt-1 lg:mt-2 xl:mt-4">
                     <HCPDetailsForm 
                       onBack={handleBack} 
                       onSubmit={handleSubmit}

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
 import bgImage from '../assets/images/bg01.png';
-import logoImage from '../assets/images/logo.png';
 import { getUserData, getDoctorsByFieldTeam, saveDoctorData } from '../services/api';
 
 interface Doctor {
@@ -121,15 +120,6 @@ const HCPList: React.FC = () => {
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header onMenuClick={toggleMenu} userName={userName} />
         <SideMenu isOpen={isMenuOpen} onClose={closeMenu} userName={userName} />
-        
-        {/* Logo in center of header */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 z-20 pt-4 md:pt-0 hidden sm:block">
-          <img src={logoImage} alt="Logo" className="endologo" />
-        </div>
-
-        <div className="top-0 left-0 right-0 h-auto bg-gradient-to-r from-amber-500 via-rose-500 via-60% to-purple-600 block sm:hidden">
-          <img src={logoImage} alt="Logo" className="endologo2" />
-        </div>
         
         <main className="flex-1 flex items-start justify-center px-4 md:px-8 py-8 mt-8">
           <div className="w-full max-w-7xl">
