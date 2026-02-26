@@ -70,19 +70,19 @@ const ThankYou: React.FC = () => {
         <SideMenu isOpen={isMenuOpen} onClose={closeMenu} /> */}
         
         <main className="flex-1 flex items-center justify-center text-center">
-          <div className="w-[90%] md:w-[80%] flex flex-col gap-4 md:gap-8 justify-center items-center py-8 text-center">
+          <div className="w-[90%] md:w-[80%] flex flex-col gap-2 md:gap-4 lg:gap-6 justify-center items-center py-4 lg:py-8 text-center">
             {/* Live Count Title */}
-            <h2 className="hdng1">
+            <h2 className="hdng1 text-3xl lg:text-4xl xl:text-5xl">
               Live count of pledges taken by<br/>the HCPs across India
             </h2>
 
             {/* Counter Display */}
-            <div className="flex items-center justify-center gap-2 my-4">
+            <div className="flex items-center justify-center gap-2 my-2 lg:my-4">
               {formatCount(pledgeCount).map((digit, index) => (
                 <div 
                   key={index}
-                  className="w-20 h-20 md:w-24 md:h-24 rounded-lg flex items-center justify-center shadow-md counterbg">
-                  <span>{digit}</span>
+                  className="w-14 h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 rounded-lg flex items-center justify-center shadow-md counterbg">
+                  <span className="text-2xl md:text-3xl lg:text-4xl">{digit}</span>
                 </div>
               ))}
             </div>
@@ -92,7 +92,7 @@ const ThankYou: React.FC = () => {
               Thank you
             </h1> */}
             
-            <p className="thanktext">
+            <p className="thanktext text-xl lg:text-2xl xl:text-3xl">
               Thank you for your participation in <br />
               <b><i>"I Support Yellow March" Campaign</i></b>
             <br />

@@ -522,7 +522,7 @@ being stored/used through such portal/platform by Alembic and / or third party.
         </div>
         
        <main className="flex-1 flex items-center justify-center text-center">
-  <div className="w-[80%] flex flex-col md:flex-row gap-4 justify-center items-center py-16 text-center">
+  <div className="w-[90%] lg:w-[80%] flex flex-col md:flex-row gap-2 lg:gap-4 justify-center items-center py-4 lg:py-8 text-center">
               
 
                 {/* Text Content */}
@@ -531,15 +531,15 @@ being stored/used through such portal/platform by Alembic and / or third party.
                   {!pledgeCompleted && !isAnimating ? (
                     <>
                       {/* Show pledge content only before success */}
-                      <p className="text-base md:text-lg lg:text-xl text-gray-800 leading-relaxed mb-6 text-center">
+                      <p className="text-sm lg:text-base xl:text-lg text-gray-800 leading-relaxed mb-3 lg:mb-6 text-center">
                         Alembic Pharmaceuticals Limited is attempting for creating record in Asia Book of Records for 'Maximum no of Healthcare Professionals (HCPs), pledging to raise awareness of Endometriosis with a goal of improving quality of life of affected women.
                       </p>
                       
-                      <p className="text-base md:text-lg lg:text-xl text-gray-800 leading-relaxed mb-8 text-center">
+                      <p className="text-sm lg:text-base xl:text-lg text-gray-800 leading-relaxed mb-4 lg:mb-8 text-center">
                         By taking this pledge they would be part of creating record in Asia Book of Records for- 'Maximum no of Healthcare Professionals (HCPs), pledging to raise awareness of Endometriosis with a goal of improving quality of life of affected women
                       </p>
                       
-                      <p className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900 leading-tight mb-8 text-center">
+                      <p className="text-lg lg:text-xl xl:text-2xl font-bold text-purple-900 leading-tight mb-4 lg:mb-8 text-center">
                         {isListening ? 'Listening... Say the pledge!' : 'Click here and say'}
                       </p>
                       
@@ -627,8 +627,8 @@ being stored/used through such portal/platform by Alembic and / or third party.
                   {/* Gray Awareness Ribbon with Progress */}
                  <div className="w-full md:w-[25%] text-center">
                    <RibbonProgress
-                     percentage={100}
-                     transitionDuration={100}
+                     percentage={pledgeCompleted || isAnimating ? 100 : 0}
+                     transitionDuration={2000}
                      className={`m-auto transition-transform duration-700 ease-out ${
                        isAnimating 
                          ? 'scale-105' 

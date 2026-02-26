@@ -243,6 +243,33 @@ background: linear-gradient(90deg, rgba(249, 174, 65, 1) 0%, rgba(252, 204, 9, 1
   font-family: 'Roboto', sans-serif;
 }
 
+/* Thank you page responsive for 1200-1400px */
+@media (min-width: 1200px) and (max-width: 1400px) {
+  .hdng1 {
+    font-size: 36px;
+  }
+  
+  .thanktext {
+    font-size: 22px;
+    margin-top: 10px;
+  }
+  
+  .thanktext b i {
+    font-size: 28px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .thanktext span {
+    font-size: 28px;
+    margin-top: 8px;
+  }
+  
+  .counterbg span {
+    font-size: 28px;
+  }
+}
+
 .thanktext
 {
  font-size: 31px;
@@ -476,6 +503,63 @@ max-width: 600px;
   .ref {
     z-index: 99;
     left: 0;
+  }
+  
+  /* Slide 2 specific styles for 1200-1400px */
+  .sldcontainer {
+    width: 100%;
+    padding: 0px 50px;
+  }
+  
+  .sld2images {
+    width: 40%;
+    float: left;
+    margin-left: 30px;
+  }
+  
+  .sld2content {
+    width: 55%;
+    float: left;
+    margin-top: 30px;
+    margin-left: -40px;
+  }
+  
+  .crclimg {
+    height: 280px;
+    width: auto;
+    float: left;
+    margin-top: 0px;
+  }
+  
+  .ramimg {
+    height: 200px;
+    width: auto;
+    margin-top: 50px;
+    margin-left: -50px;
+    float: left;
+  }
+  
+  .sld2content h1 {
+    background-color: #ffffff52;
+    font-size: 24px;
+    font-style: italic;
+    color: #fff;
+    position: relative;
+    border-radius: 50px;
+    padding: 5px 55px 10px 45px;
+    text-align: left;
+    margin-bottom: 12px;
+  }
+  
+  .sld2content h1 img {
+    position: absolute;
+    right: -2px;
+    top: -5px;
+    height: 55px;
+  }
+  
+  .sld2hd1, .sld2hd1 span {
+    font-size: 32px;
   }
 }
 
