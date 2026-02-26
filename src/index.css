@@ -421,6 +421,119 @@ max-width: 600px;
         margin-top: 0px;
     }
 
+/* Large desktop screens (1200px and above) */
+@media (min-width: 1200px) {
+  .contentdiv {
+    display: block;
+    position: absolute;
+    right: 5% !important;
+    left: auto !important;
+    top: 8% !important;
+    width: auto !important;
+    transform: none !important;
+  }
+  
+  .endoh1 {
+    font-size: 55px;
+  }
+  
+  .endoh2 {
+    font-size: 45px;
+  }
+  
+  .endoh3 {
+    font-size: 45px;
+  }
+  
+  .txtimgs1 {
+    height: 90px;
+    max-width: 100%;
+    max-height: 110px;
+  }
+  
+  .endoh4 {
+    font-size: 90px;
+    font-weight: bold;
+    color: #f3bb1c;
+    margin-top: 25px;
+  }
+  
+  .wmntxt {
+    color: #facc15;
+    margin-left: 200px;
+    margin-top: -45px;
+    font-size: 50px;
+  }
+  
+  .mapimg {
+    height: 250px;
+  }
+  
+  .sld1rbndiv {
+    max-width: 650px;
+  }
+  
+  .sldcontainer {
+    width: 100%;
+    padding: 0px 100px;
+  }
+  
+  .sld2images {
+    width: 45%;
+    float: left;
+    margin-left: 80px;
+  }
+  
+  .sld2content {
+    width: 50%;
+    float: left;
+    margin-top: 50px;
+    margin-left: -60px;
+  }
+  
+  .crclimg {
+    height: 420px;
+    width: auto;
+    float: left;
+    margin-top: 0px;
+  }
+  
+  .ramimg {
+    height: 320px;
+    width: auto;
+    margin-top: 60px;
+    margin-left: -80px;
+    float: left;
+  }
+  
+  .sld2content h1 {
+    background-color: #ffffff52;
+    font-size: 32px;
+    font-style: italic;
+    color: #fff;
+    position: relative;
+    border-radius: 50px;
+    padding: 5px 75px 10px 65px;
+    text-align: left;
+    margin-bottom: 20px;
+  }
+  
+  .sld2content h1 img {
+    position: absolute;
+    right: -2px;
+    top: -5px;
+    height: 80px;
+  }
+  
+  .sld2hd1, .sld2hd1 span {
+    font-size: 45px;
+  }
+
+  .ref {
+    z-index: 99;
+    left: 0;
+  }
+}
 
 @media (width: 1024px) {
    .eam-logo {
@@ -554,17 +667,59 @@ max-width: 600px;
       margin-top: 15px;
     margin-left: 20px;
 }
+
+.contentdiv {
+    display: block;
+    position: absolute;
+    right: auto;
+    left: 5%;
+    top: 2%;
+    width: 90%;
+    transform: none;
+}
+
+.endoh1 {
+    font-size: 38px;
+}
+
+.endoh2 {
+    font-size: 32px;
+}
+
+.endoh3 {
+    font-size: 32px;
+}
+
+.txtimgs1 {
+    height: 65px;
+    max-width: 100%;
+    max-height: 80px;
+}
+
+.endoh4 {
+    font-size: 65px;
+    margin-top: 15px;
+}
+
+.wmntxt {
+    color: #facc15;
+    margin-left: 130px;
+    margin-top: -30px;
+    font-size: 38px;
+}
+
 .ref{
   z-index: 99;
   left: 0;
+  width: 100%;
 }
 
 .mapimg {
-    height: 220px;
+    height: 180px;
 }
 
 .sld1rbndiv {
-max-width:500px;
+max-width:420px;
 }
 .prplbtn2{font-size: 30px; border-radius: 50px;}
 
@@ -627,14 +782,41 @@ position: absolute;
 @media (max-width:768px) and (min-width:576px) {
   
 .sld1rbndiv {
-    max-width: 480px;
+    max-width: 380px;
 }
   .contentdiv {
     display: block;
     position: absolute;
-    right: 14%;
+    right: auto;
+    left: 5%;
     top: 2%;
+    width: 90%;
+    transform: none;
 }
+
+.endoh1 {
+    font-size: 34px;
+}
+
+.endoh2 {
+    font-size: 28px;
+}
+
+.endoh3 {
+    font-size: 28px;
+}
+
+.txtimgs1 {
+    height: 55px;
+    max-width: 100%;
+    max-height: 70px;
+}
+
+.endoh4 {
+    font-size: 55px;
+    margin-top: 10px;
+}
+
 .endologo
 {width: auto;
         height: auto;
@@ -654,8 +836,13 @@ position: absolute;
 
 .wmntxt{
 color: #facc15;
-        margin-left: 80px;
-        margin-top: -20px;
+        margin-left: 110px;
+        margin-top: -25px;
+        font-size: 34px;
+}
+
+.mapimg {
+    height: 150px;
 }
 
 .ref{

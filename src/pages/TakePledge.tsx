@@ -40,7 +40,7 @@ declare global {
 
 const TakePledge: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [ribbonProgress, setRibbonProgress] = useState(0);
+  //const [ribbonProgress, setRibbonProgress] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showConsent, setShowConsent] = useState(true);
   const [pledgeCompleted, setPledgeCompleted] = useState(false);
@@ -55,11 +55,13 @@ const TakePledge: React.FC = () => {
   
   // Speech recognition states
   const [isListening, setIsListening] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
   const [isSupported, setIsSupported] = useState(true);
+  const [showSkipButton, setShowSkipButton] = useState(false);
   
   const navigate = useNavigate();
   const recognitionRef = useRef<ISpeechRecognition | null>(null);
+  const skipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Target words/phrases to detect from "I support yellow march"
   // Support partial matches (50% or more words) and variations of "march"
@@ -202,6 +204,13 @@ const TakePledge: React.FC = () => {
       recognitionRef.current.stop();
     }
     
+    // Clear skip button timer and hide skip button
+    if (skipTimerRef.current) {
+      clearTimeout(skipTimerRef.current);
+      skipTimerRef.current = null;
+    }
+    setShowSkipButton(false);
+    
     // Update visual states
     setIsListening(false);
     setIsAnimating(true);
@@ -240,13 +249,13 @@ const TakePledge: React.FC = () => {
     };
     
     // Function to animate ribbon to target percentage
-    const animateToPercentage = (targetPercentage: number) => {
+    const animateToPercentage = (_targetPercentage: number) => {
       const animationDuration = 2000; // Total animation time in ms
-      const startProgress = 0; // Always start from 0 since ribbon is empty initially
+      // const startProgress = 0; // Always start from 0 since ribbon is empty initially
       let startTime: number | null = null;
       
       // Ease-out cubic for smooth deceleration
-      const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3);
+      // const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3);
       
       const animateProgress = (timestamp: number) => {
         if (!startTime) startTime = timestamp;
@@ -254,15 +263,15 @@ const TakePledge: React.FC = () => {
         const linearProgress = Math.min(elapsed / animationDuration, 1);
         
         // Apply easing and interpolate from 0 to target percentage
-        const easedProgress = easeOutCubic(linearProgress);
-        const currentProgress = startProgress + (targetPercentage - startProgress) * easedProgress;
-        setRibbonProgress(currentProgress);
+        //const easedProgress = easeOutCubic(linearProgress);
+        //const currentProgress = startProgress + (targetPercentage - startProgress) * easedProgress;
+        //setRibbonProgress(currentProgress);
         
         if (linearProgress < 1) {
           requestAnimationFrame(animateProgress);
         } else {
           // Animation complete
-          setRibbonProgress(targetPercentage);
+          //setRibbonProgress(targetPercentage);
           setPledgeCompleted(true);
         }
       };
@@ -388,11 +397,38 @@ const TakePledge: React.FC = () => {
     if (isListening) {
       // If already listening, stop recognition
       stopSpeechRecognition();
+      // Clear skip button timer
+      if (skipTimerRef.current) {
+        clearTimeout(skipTimerRef.current);
+        skipTimerRef.current = null;
+      }
+      setShowSkipButton(false);
     } else {
       // Start speech recognition
       setError(null);
+      setShowSkipButton(false);
       startSpeechRecognition();
+      
+      // Show skip button after 3 seconds
+      skipTimerRef.current = setTimeout(() => {
+        setShowSkipButton(true);
+      }, 3000);
     }
+  };
+
+  /**
+   * Handles skip button click - bypasses speech recognition
+   */
+  const handleSkipClick = () => {
+    // Clear skip timer
+    if (skipTimerRef.current) {
+      clearTimeout(skipTimerRef.current);
+      skipTimerRef.current = null;
+    }
+    setShowSkipButton(false);
+    
+    // Trigger successful detection (same as speech recognition success)
+    handleSuccessfulDetection();
   };
 
   // Cleanup speech recognition on component unmount
@@ -401,6 +437,11 @@ const TakePledge: React.FC = () => {
       if (recognitionRef.current) {
         recognitionRef.current.abort();
         recognitionRef.current = null;
+      }
+      // Clear skip button timer
+      if (skipTimerRef.current) {
+        clearTimeout(skipTimerRef.current);
+        skipTimerRef.current = null;
       }
     };
   }, []);
@@ -526,13 +567,6 @@ being stored/used through such portal/platform by Alembic and / or third party.
                         </div>
                       )}
                       
-                      {/* Error Message Display */}
-                      {error && (
-                        <div className="mb-4 p-3 bg-red-100 border border-red-300 rounded-lg text-red-700 text-sm">
-                          {error}
-                        </div>
-                      )}
-                      
                       {/* Browser Support Warning */}
                       {!isSupported && (
                         <div className="mb-4 p-3 bg-yellow-100 border border-yellow-300 rounded-lg text-yellow-700 text-sm">
@@ -556,9 +590,19 @@ being stored/used through such portal/platform by Alembic and / or third party.
                         )}
                       </button>
                       
-                      <p className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900 leading-relaxed mb-8 text-center">
+                      <p className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-900 leading-relaxed mb-4 text-center">
                         {isListening ? 'Say "I Support Yellow March"' : 'to take pledge'}
                       </p>
+                      
+                      {/* Skip Button - Shows after 3 seconds when listening */}
+                      {isListening && showSkipButton && (
+                        <button
+                          onClick={handleSkipClick}
+                          className="px-8 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-full text-base font-medium transition-all duration-300 animate-fade-in mb-4"
+                        >
+                          Skip
+                        </button>
+                      )}
                     </>
                   ) : (
                     /* Just Continue button - Shown after pledge is detected */
@@ -583,7 +627,7 @@ being stored/used through such portal/platform by Alembic and / or third party.
                   {/* Gray Awareness Ribbon with Progress */}
                  <div className="w-full md:w-[25%] text-center">
                    <RibbonProgress
-                     percentage={ribbonProgress}
+                     percentage={100}
                      transitionDuration={100}
                      className={`m-auto transition-transform duration-700 ease-out ${
                        isAnimating 
