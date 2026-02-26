@@ -104,7 +104,7 @@ const InstallPrompt = () => {
             
             <div className="flex-1 text-white">
               <h3 className="font-bold text-lg mb-0.5">
-                Install EAM App
+                Install Yellow March App
               </h3>
               <p className="text-sm text-purple-100">
                 Quick access from your home screen

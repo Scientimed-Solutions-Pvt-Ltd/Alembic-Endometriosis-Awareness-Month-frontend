@@ -421,56 +421,114 @@ max-width: 600px;
         margin-top: 0px;
     }
 
-/* Large desktop screens (1200px and above) */
-@media (min-width: 1200px) {
+/* Medium-large desktop screens (1200px to 1400px) */
+@media (min-width: 1200px) and (max-width: 1400px) {
   .contentdiv {
     display: block;
     position: absolute;
-    right: 5% !important;
+    right: 2% !important;
     left: auto !important;
-    top: 8% !important;
-    width: auto !important;
+    top: 3% !important;
+    width: 50% !important;
     transform: none !important;
   }
   
   .endoh1 {
-    font-size: 55px;
+    font-size: 38px;
   }
   
   .endoh2 {
-    font-size: 45px;
+    font-size: 32px;
   }
   
   .endoh3 {
-    font-size: 45px;
+    font-size: 32px;
   }
   
   .txtimgs1 {
-    height: 90px;
+    height: 55px;
+    max-width: 100%;
+    max-height: 70px;
+  }
+  
+  .endoh4 {
+    font-size: 55px;
+    font-weight: bold;
+    color: #f3bb1c;
+    margin-top: 10px;
+  }
+  
+  .wmntxt {
+    color: #facc15;
+    margin-left: 120px;
+    margin-top: -25px;
+    font-size: 32px;
+  }
+  
+  .mapimg {
+    height: 140px;
+  }
+  
+  .sld1rbndiv {
+    max-width: 450px;
+  }
+
+  .ref {
+    z-index: 99;
+    left: 0;
+  }
+}
+
+/* Large desktop screens (1400px and above) */
+@media (min-width: 1400px) {
+  .contentdiv {
+    display: block;
+    position: absolute;
+    right: 3% !important;
+    left: auto !important;
+    top: 5% !important;
+    width: 55% !important;
+    transform: none !important;
+  }
+  
+  .endoh1 {
+    font-size: 45px;
+  }
+  
+  .endoh2 {
+    font-size: 38px;
+  }
+  
+  .endoh3 {
+    font-size: 38px;
+  }
+  
+  .txtimgs1 {
+    height: 70px;
     max-width: 100%;
     max-height: 110px;
   }
   
   .endoh4 {
-    font-size: 90px;
+    font-size: 70px;
     font-weight: bold;
     color: #f3bb1c;
-    margin-top: 25px;
+    margin-top: 15px;
   }
   
   .wmntxt {
     color: #facc15;
-    margin-left: 200px;
-    margin-top: -45px;
-    font-size: 50px;
+    margin-left: 150px;
+    margin-top: -35px;
+    font-size: 40px;
   }
   
   .mapimg {
-    height: 250px;
+    height: 180px;
   }
   
   .sld1rbndiv {
-    max-width: 650px;
+    max-width: 550px;
   }
   
   .sldcontainer {
