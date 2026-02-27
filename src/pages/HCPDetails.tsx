@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import HCPDetailsForm from '../components/HCPDetailsForm';
 import SideMenu from '../components/SideMenu';
@@ -13,7 +13,9 @@ const HCPDetails: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [existingDoctors, setExistingDoctors] = useState<any[]>([]);
+  const [initialDoctor, setInitialDoctor] = useState<any>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -99,6 +101,16 @@ const HCPDetails: React.FC = () => {
     }
   }, [navigate]);
 
+  // Check for selected doctor from HCPList navigation
+  useEffect(() => {
+    const state = location.state as { selectedDoctor?: any } | null;
+    if (state?.selectedDoctor) {
+      setInitialDoctor(state.selectedDoctor);
+      // Clear the state to prevent re-selection on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
+
   // Prevent body scroll when menu is open
   useEffect(() => {
     if (isMenuOpen) {
@@ -140,6 +152,7 @@ const HCPDetails: React.FC = () => {
                       isLoading={isLoading}
                       error={error}
                       existingDoctors={existingDoctors}
+                      initialDoctor={initialDoctor}
                     />
                   </div>
                 </div>

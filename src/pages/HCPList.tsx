@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import SideMenu from '../components/SideMenu';
 import bgImage from '../assets/images/bg01.png';
-import { getUserData, getDoctorsByFieldTeam, saveDoctorData } from '../services/api';
+import { getUserData, getDoctorsByFieldTeam } from '../services/api';
 
 interface Doctor {
   id: number;
@@ -36,28 +36,14 @@ const HCPList: React.FC = () => {
     setIsMenuOpen(false);
   };
 
-  // Handle try again for pending pledge
+  // Handle selecting a doctor to edit
+  const handleSelectDoctor = (doctor: Doctor) => {
+    navigate('/hcp-details', { state: { selectedDoctor: doctor } });
+  };
+
+  // Handle try again for pending pledge - navigate to HCP details to fill missing info
   const handleTryAgain = (doctor: Doctor) => {
-    // Convert doctor data to match the expected format
-    const doctorData = {
-      id: doctor.id,
-      dr_name: doctor.dr_name,
-      registration_no: doctor.registration_no || undefined,
-      mobile: doctor.mobile || undefined,
-      email: doctor.email || undefined,
-      p_code: doctor.p_code || undefined,
-      city: doctor.city,
-      pledge_taken: doctor.pledge_taken,
-      terms_accepted: doctor.terms_accepted,
-      field_team_id: doctor.field_team_id,
-      created_at: doctor.created_at,
-      updated_at: doctor.updated_at,
-    };
-    
-    // Save doctor data to localStorage
-    saveDoctorData(doctorData);
-    // Navigate to take pledge page
-    navigate('/take-pledge');
+    navigate('/hcp-details', { state: { selectedDoctor: doctor } });
   };
 
   // Fetch doctors for the logged-in MR
@@ -195,7 +181,11 @@ const HCPList: React.FC = () => {
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                           {doctors.map((doctor, index) => (
-                            <tr key={doctor.id} className="hover:bg-gray-50 transition-colors">
+                            <tr 
+                              key={doctor.id} 
+                              className="hover:bg-purple-50 transition-colors cursor-pointer"
+                              onClick={() => handleSelectDoctor(doctor)}
+                            >
                               <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                                 {index + 1}
                               </td>
@@ -225,7 +215,10 @@ const HCPList: React.FC = () => {
                                       Pending
                                     </span>
                                     <button
-                                      onClick={() => handleTryAgain(doctor)}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleTryAgain(doctor);
+                                      }}
                                       className="px-3 py-1 text-xs font-semibold text-white bg-purple-900 rounded-lg hover:bg-purple-800 transition-colors"
                                     >
                                       Try Again
