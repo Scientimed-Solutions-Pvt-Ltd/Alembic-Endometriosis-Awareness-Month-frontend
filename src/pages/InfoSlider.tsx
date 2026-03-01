@@ -72,7 +72,7 @@ const Slide1: React.FC = () => (
     </div>
 
     {/* Citation */}
-    <div className="absolute bottom-1 sm:bottom-12 md:bottom-12 lg:bottom-8 left-[50%] sm:left-[60%] md:left-[60%] lg:left-[60%] -translate-x-1/2 z-20 px-2 sm:px-4 text-left ref">
+    <div className="absolute bottom-1 sm:bottom-12 md:bottom-12 lg:bottom-8 left-[50%] sm:left-[60%] md:left-[60%] lg:left-[60%] citation1 -translate-x-1/2 z-20 px-2 sm:px-4 text-left ref">
       <p className="text-white/70 text-[8px] sm:text-[10px] md:text-[12px]">
         Patel M. Recent trends in medical management of<br />
         endometriosis. <em>J Obstet Gynaecol India.</em> 2024;74(6):479-83
@@ -118,7 +118,7 @@ const Slide2: React.FC = () => (
      
 
       {/* Citations */}
-      <div className="absolute bottom-1 sm:bottom-2 md:bottom-4 left-[50%] sm:left-[60%] md:left-[60%] lg:left-[60%] -translate-x-1/2 z-20 px-2 sm:px-4 text-left ref">
+      <div className="absolute bottom-1 sm:bottom-2 md:bottom-4 left-[50%] sm:left-[60%] md:left-[60%] lg:left-[60%] citations2 -translate-x-1/2 z-20 px-2 sm:px-4 text-left ref">
       <p className="text-white/70 text-[8px] sm:text-[10px] md:text-[12px]">
           1. Wilson-mooney C. The impact of endometriosis. <em>Nursing.</em> 2025;55(8):25-30.<br />
           2. Sena K. Raising endometriosis awareness: A critical aspect of maternal health. <em>J Women's Health Care.</em> 2025;13(10):754.<br />

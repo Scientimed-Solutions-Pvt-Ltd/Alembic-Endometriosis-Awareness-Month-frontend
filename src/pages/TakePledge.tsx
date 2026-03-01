@@ -459,7 +459,7 @@ const TakePledge: React.FC = () => {
   }, [isMenuOpen]);
 
   return (
-    <div className="min-h-screen flex flex-col relative bg-white">
+    <div className="h-screen flex flex-col relative bg-white overflow-hidden">
       {/* Consent Popup */}
       {showConsent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">

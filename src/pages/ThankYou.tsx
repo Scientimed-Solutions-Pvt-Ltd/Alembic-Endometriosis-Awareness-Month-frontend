@@ -54,7 +54,7 @@ const ThankYou: React.FC = () => {
   }, [targetCount]);
 
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="h-screen flex flex-col relative overflow-hidden">
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -65,7 +65,7 @@ const ThankYou: React.FC = () => {
       {/* <div className="absolute top-0 left-0 right-0 h-20 md:h-24 bg-gradient-to-r from-amber-500 via-rose-500 via-60% to-purple-600" /> */}
       
       {/* Content */}
-      <div className="relative z-10 flex flex-col min-h-screen">
+      <div className="relative z-10 flex flex-col h-full">
         {/* <Header onMenuClick={toggleMenu} />
         <SideMenu isOpen={isMenuOpen} onClose={closeMenu} /> */}
         

@@ -163,16 +163,13 @@ const HCPList: React.FC = () => {
                               Doctor Name
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                              Registration No
-                            </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                              City
+                              P.Code
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
                               Mobile
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                              Email
+                              City
                             </th>
                             <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider">
                               Pledge Status
@@ -193,16 +190,13 @@ const HCPList: React.FC = () => {
                                 {doctor.dr_name}
                               </td>
                               <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
-                                {doctor.registration_no || 'N/A'}
-                              </td>
-                              <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
-                                {doctor.city}
+                                {doctor.p_code || 'N/A'}
                               </td>
                               <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
                                 {doctor.mobile || 'N/A'}
                               </td>
                               <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
-                                {doctor.email || 'N/A'}
+                                {doctor.city}
                               </td>
                               <td className="px-4 py-4 whitespace-nowrap text-center">
                                 {doctor.pledge_taken ? (
