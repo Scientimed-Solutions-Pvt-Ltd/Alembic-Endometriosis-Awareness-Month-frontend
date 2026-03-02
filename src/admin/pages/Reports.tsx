@@ -12,6 +12,8 @@ import {
   getHierarchyPerformance,
   exportReport,
   getAllZones,
+  getTodaysPledges,
+  exportTodaysPledges,
   type ReportSummary,
   type ZoneReport,
   type RegionReport,
@@ -21,6 +23,7 @@ import {
   type PledgeTrend,
   type HierarchyPerformance,
   type Zone,
+  type TodaysPledge,
 } from '../../services/adminApi';
 
 type TabType = 'overview' | 'geographic' | 'mr-performance' | 'hierarchy' | 'trends';
@@ -41,6 +44,8 @@ const Reports: React.FC = () => {
   const [zeroPledgeMRs, setZeroPledgeMRs] = useState<MRPerformance[]>([]);
   const [pledgeTrend, setPledgeTrend] = useState<PledgeTrend[]>([]);
   const [hierarchyData, setHierarchyData] = useState<HierarchyPerformance[]>([]);
+  const [todaysPledges, setTodaysPledges] = useState<TodaysPledge[]>([]);
+  const [todaysPledgeCount, setTodaysPledgeCount] = useState(0);
   
   // Filters
   const [zones, setZones] = useState<Zone[]>([]);
@@ -69,6 +74,19 @@ const Reports: React.FC = () => {
       }
     } catch (err) {
       console.error('Failed to fetch zones:', err);
+    }
+  }, []);
+
+  // Fetch today's pledges
+  const fetchTodaysPledges = useCallback(async () => {
+    try {
+      const response = await getTodaysPledges();
+      if (response.success) {
+        setTodaysPledges(response.data.pledges);
+        setTodaysPledgeCount(response.data.total_count);
+      }
+    } catch (err) {
+      console.error('Failed to fetch today\'s pledges:', err);
     }
   }, []);
 
@@ -146,11 +164,11 @@ const Reports: React.FC = () => {
   useEffect(() => {
     const loadInitialData = async () => {
       setIsLoading(true);
-      await Promise.all([fetchSummary(), fetchZones()]);
+      await Promise.all([fetchSummary(), fetchZones(), fetchTodaysPledges()]);
       setIsLoading(false);
     };
     loadInitialData();
-  }, [fetchSummary, fetchZones]);
+  }, [fetchSummary, fetchZones, fetchTodaysPledges]);
 
   // Load tab-specific data
   useEffect(() => {
@@ -179,6 +197,23 @@ const Reports: React.FC = () => {
       document.body.removeChild(a);
     } catch (err) {
       setError('Failed to export report');
+    }
+  };
+
+  // Handle export today's pledges
+  const handleExportTodaysPledges = async () => {
+    try {
+      const blob = await exportTodaysPledges();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `todays_pledges_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      setError('Failed to export today\'s pledges');
     }
   };
 
@@ -339,6 +374,92 @@ const Reports: React.FC = () => {
               color="bg-pink-500"
               icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg>}
             />
+          </div>
+
+          {/* Today's Pledges */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">📅</span>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800">Today's Pledges</h3>
+                  <p className="text-sm text-gray-500">{new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                  {todaysPledgeCount} Pledges Today
+                </span>
+                <button
+                  onClick={handleExportTodaysPledges}
+                  className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Export CSV
+                </button>
+              </div>
+            </div>
+            {todaysPledges.length > 0 ? (
+              <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 sticky top-0">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">S.No</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Doctor Name</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">City</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">MR Name</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Area</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Terms Time</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Pledge Time</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {todaysPledges.map((pledge, idx) => (
+                      <tr key={pledge.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 text-sm text-gray-600">{idx + 1}</td>
+                        <td className="px-4 py-3">
+                          <p className="text-sm font-medium text-gray-900">{pledge.dr_name}</p>
+                          <p className="text-xs text-gray-500">{pledge.p_code || 'N/A'}</p>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{pledge.city || 'N/A'}</td>
+                        <td className="px-4 py-3">
+                          <p className="text-sm text-gray-900">{pledge.mr_name}</p>
+                          <p className="text-xs text-gray-500">{pledge.mr_employee_id}</p>
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="text-sm text-gray-900">{pledge.area_name}</p>
+                          <p className="text-xs text-gray-500">{pledge.region_name} • {pledge.zone_name}</p>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-center">
+                          {pledge.terms_accepted ? (
+                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
+                              {pledge.terms_time}
+                            </span>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-center">
+                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">
+                            {pledge.pledge_time}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="p-8 text-center">
+                <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <p className="text-gray-500 text-lg">No pledges yet today</p>
+                <p className="text-gray-400 text-sm mt-1">Pledges will appear here as they come in</p>
+              </div>
+            )}
           </div>
 
           {/* Conversion Funnel */}

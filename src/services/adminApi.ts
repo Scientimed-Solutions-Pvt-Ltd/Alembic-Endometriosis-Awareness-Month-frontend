@@ -1106,3 +1106,58 @@ export const exportReport = async (type: string, format: 'json' | 'csv' = 'csv')
 
   return response.json();
 };
+
+// Today's Pledge Interface
+export interface TodaysPledge {
+  id: number;
+  dr_name: string;
+  registration_no: string | null;
+  p_code: string | null;
+  mobile: string | null;
+  city: string | null;
+  mr_name: string;
+  mr_employee_id: string;
+  area_name: string;
+  region_name: string;
+  zone_name: string;
+  terms_accepted: boolean;
+  terms_accepted_at: string | null;
+  pledge_taken_at: string | null;
+  pledge_time: string;
+  terms_time: string;
+}
+
+export interface TodaysPledgesResponse {
+  success: boolean;
+  data: {
+    date: string;
+    total_count: number;
+    pledges: TodaysPledge[];
+  };
+}
+
+// Get Today's Pledges
+export const getTodaysPledges = async (): Promise<TodaysPledgesResponse> => {
+  const response = await fetch(`${API_BASE_URL}/admin/reports/todays-pledges`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch today\'s pledges');
+  }
+
+  return response.json();
+};
+
+// Export Today's Pledges to CSV
+export const exportTodaysPledges = async (): Promise<Blob> => {
+  const response = await fetch(`${API_BASE_URL}/admin/reports/todays-pledges/export`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to export today\'s pledges');
+  }
+
+  return response.blob();
+};
