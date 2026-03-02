@@ -24,9 +24,12 @@ import {
   type HierarchyPerformance,
   type Zone,
   type TodaysPledge,
+  type PledgeFilters,
 } from '../../services/adminApi';
 
 type TabType = 'overview' | 'geographic' | 'mr-performance' | 'hierarchy' | 'trends';
+type SortField = 'pledge_taken_at' | 'dr_name' | 'city' | 'terms_accepted_at';
+type SortOrder = 'asc' | 'desc';
 
 const Reports: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
@@ -46,6 +49,12 @@ const Reports: React.FC = () => {
   const [hierarchyData, setHierarchyData] = useState<HierarchyPerformance[]>([]);
   const [todaysPledges, setTodaysPledges] = useState<TodaysPledge[]>([]);
   const [todaysPledgeCount, setTodaysPledgeCount] = useState(0);
+  
+  // Date range and sorting for pledges
+  const [pledgeStartDate, setPledgeStartDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [pledgeEndDate, setPledgeEndDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [pledgeSortField, setPledgeSortField] = useState<SortField>('pledge_taken_at');
+  const [pledgeSortOrder, setPledgeSortOrder] = useState<SortOrder>('desc');
   
   // Filters
   const [zones, setZones] = useState<Zone[]>([]);
@@ -78,17 +87,22 @@ const Reports: React.FC = () => {
   }, []);
 
   // Fetch today's pledges
-  const fetchTodaysPledges = useCallback(async () => {
+  const fetchTodaysPledges = useCallback(async (filters?: PledgeFilters) => {
     try {
-      const response = await getTodaysPledges();
+      const response = await getTodaysPledges(filters || {
+        start_date: pledgeStartDate,
+        end_date: pledgeEndDate,
+        sort_field: pledgeSortField,
+        sort_order: pledgeSortOrder,
+      });
       if (response.success) {
         setTodaysPledges(response.data.pledges);
         setTodaysPledgeCount(response.data.total_count);
       }
     } catch (err) {
-      console.error('Failed to fetch today\'s pledges:', err);
+      console.error('Failed to fetch pledges:', err);
     }
-  }, []);
+  }, [pledgeStartDate, pledgeEndDate, pledgeSortField, pledgeSortOrder]);
 
   // Fetch geographic data
   const fetchGeographicData = useCallback(async () => {
@@ -183,6 +197,11 @@ const Reports: React.FC = () => {
     }
   }, [activeTab, fetchGeographicData, fetchMRData, fetchHierarchyData, fetchTrendData]);
 
+  // Refetch pledges when sorting changes
+  useEffect(() => {
+    fetchTodaysPledges();
+  }, [pledgeSortField, pledgeSortOrder, fetchTodaysPledges]);
+
   // Handle export
   const handleExport = async (type: string) => {
     try {
@@ -200,20 +219,68 @@ const Reports: React.FC = () => {
     }
   };
 
-  // Handle export today's pledges
+  // Handle export pledges with date range
   const handleExportTodaysPledges = async () => {
     try {
-      const blob = await exportTodaysPledges();
+      const blob = await exportTodaysPledges({
+        start_date: pledgeStartDate,
+        end_date: pledgeEndDate,
+      });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `todays_pledges_${new Date().toISOString().split('T')[0]}.csv`;
+      const filename = pledgeStartDate === pledgeEndDate 
+        ? `pledges_${pledgeStartDate}.csv`
+        : `pledges_${pledgeStartDate}_to_${pledgeEndDate}.csv`;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (err) {
-      setError('Failed to export today\'s pledges');
+      setError('Failed to export pledges');
+    }
+  };
+
+  // Handle sorting for pledges table
+  const handlePledgeSort = (field: SortField) => {
+    if (pledgeSortField === field) {
+      setPledgeSortOrder(pledgeSortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setPledgeSortField(field);
+      setPledgeSortOrder('desc');
+    }
+  };
+
+  // Get sort icon
+  const SortIcon = ({ field }: { field: SortField }) => {
+    if (pledgeSortField !== field) {
+      return (
+        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+        </svg>
+      );
+    }
+    return pledgeSortOrder === 'asc' ? (
+      <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+      </svg>
+    ) : (
+      <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+      </svg>
+    );
+  };
+
+  // Get pledge card title based on date selection
+  const getPledgeCardTitle = () => {
+    const today = new Date().toISOString().split('T')[0];
+    if (pledgeStartDate === today && pledgeEndDate === today) {
+      return "Today's Pledges";
+    } else if (pledgeStartDate === pledgeEndDate) {
+      return `Pledges on ${new Date(pledgeStartDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+    } else {
+      return `Pledges (${new Date(pledgeStartDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} - ${new Date(pledgeEndDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })})`;
     }
   };
 
@@ -378,27 +445,64 @@ const Reports: React.FC = () => {
 
           {/* Today's Pledges */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">📅</span>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800">Today's Pledges</h3>
-                  <p className="text-sm text-gray-500">{new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <div className="p-4 border-b border-gray-100">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">📅</span>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800">{getPledgeCardTitle()}</h3>
+                    <p className="text-sm text-gray-500">
+                      {pledgeStartDate === pledgeEndDate
+                        ? new Date(pledgeStartDate).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+                        : `${new Date(pledgeStartDate).toLocaleDateString('en-IN')} to ${new Date(pledgeEndDate).toLocaleDateString('en-IN')}`
+                      }
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                  {todaysPledgeCount} Pledges Today
-                </span>
-                <button
-                  onClick={handleExportTodaysPledges}
-                  className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  Export CSV
-                </button>
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm text-gray-600">From:</label>
+                    <input
+                      type="date"
+                      value={pledgeStartDate}
+                      onChange={(e) => setPledgeStartDate(e.target.value)}
+                      max={pledgeEndDate}
+                      className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm text-gray-600">To:</label>
+                    <input
+                      type="date"
+                      value={pledgeEndDate}
+                      onChange={(e) => setPledgeEndDate(e.target.value)}
+                      min={pledgeStartDate}
+                      max={new Date().toISOString().split('T')[0]}
+                      className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                  <button
+                    onClick={() => fetchTodaysPledges()}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Refresh
+                  </button>
+                  <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                    {todaysPledgeCount} Pledges
+                  </span>
+                  <button
+                    onClick={handleExportTodaysPledges}
+                    className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Export CSV
+                  </button>
+                </div>
               </div>
             </div>
             {todaysPledges.length > 0 ? (
@@ -407,18 +511,52 @@ const Reports: React.FC = () => {
                   <thead className="bg-gray-50 sticky top-0">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">S.No</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Doctor Name</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">City</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                      <th 
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:bg-gray-100"
+                        onClick={() => handlePledgeSort('dr_name')}
+                      >
+                        <div className="flex items-center gap-1">
+                          Doctor Name
+                          <SortIcon field="dr_name" />
+                        </div>
+                      </th>
+                      <th 
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:bg-gray-100"
+                        onClick={() => handlePledgeSort('city')}
+                      >
+                        <div className="flex items-center gap-1">
+                          City
+                          <SortIcon field="city" />
+                        </div>
+                      </th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">MR Name</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Area</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Terms Time</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Pledge Time</th>
+                      <th 
+                        className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase cursor-pointer hover:bg-gray-100"
+                        onClick={() => handlePledgeSort('terms_accepted_at')}
+                      >
+                        <div className="flex items-center justify-center gap-1">
+                          Terms Time
+                          <SortIcon field="terms_accepted_at" />
+                        </div>
+                      </th>
+                      <th 
+                        className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase cursor-pointer hover:bg-gray-100"
+                        onClick={() => handlePledgeSort('pledge_taken_at')}
+                      >
+                        <div className="flex items-center justify-center gap-1">
+                          Pledge Time
+                          <SortIcon field="pledge_taken_at" />
+                        </div>
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     {todaysPledges.map((pledge, idx) => (
                       <tr key={pledge.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3 text-sm text-gray-600">{idx + 1}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{pledge.pledge_date}</td>
                         <td className="px-4 py-3">
                           <p className="text-sm font-medium text-gray-900">{pledge.dr_name}</p>
                           <p className="text-xs text-gray-500">{pledge.p_code || 'N/A'}</p>
@@ -456,8 +594,8 @@ const Reports: React.FC = () => {
                 <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                <p className="text-gray-500 text-lg">No pledges yet today</p>
-                <p className="text-gray-400 text-sm mt-1">Pledges will appear here as they come in</p>
+                <p className="text-gray-500 text-lg">No pledges found</p>
+                <p className="text-gray-400 text-sm mt-1">Try adjusting the date range</p>
               </div>
             )}
           </div>

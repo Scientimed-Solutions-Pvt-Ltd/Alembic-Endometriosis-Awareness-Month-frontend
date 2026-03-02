@@ -1123,6 +1123,7 @@ export interface TodaysPledge {
   terms_accepted: boolean;
   terms_accepted_at: string | null;
   pledge_taken_at: string | null;
+  pledge_date: string;
   pledge_time: string;
   terms_time: string;
 }
@@ -1130,33 +1131,59 @@ export interface TodaysPledge {
 export interface TodaysPledgesResponse {
   success: boolean;
   data: {
-    date: string;
+    start_date: string;
+    end_date: string;
     total_count: number;
     pledges: TodaysPledge[];
   };
 }
 
-// Get Today's Pledges
-export const getTodaysPledges = async (): Promise<TodaysPledgesResponse> => {
-  const response = await fetch(`${API_BASE_URL}/admin/reports/todays-pledges`, {
+export interface PledgeFilters {
+  start_date?: string;
+  end_date?: string;
+  sort_field?: string;
+  sort_order?: 'asc' | 'desc';
+}
+
+// Get Pledges (supports date range and sorting)
+export const getTodaysPledges = async (filters?: PledgeFilters): Promise<TodaysPledgesResponse> => {
+  const params = new URLSearchParams();
+  if (filters?.start_date) params.set('start_date', filters.start_date);
+  if (filters?.end_date) params.set('end_date', filters.end_date);
+  if (filters?.sort_field) params.set('sort_field', filters.sort_field);
+  if (filters?.sort_order) params.set('sort_order', filters.sort_order);
+
+  const url = params.toString() 
+    ? `${API_BASE_URL}/admin/reports/todays-pledges?${params}`
+    : `${API_BASE_URL}/admin/reports/todays-pledges`;
+
+  const response = await fetch(url, {
     headers: getHeaders(),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to fetch today\'s pledges');
+    throw new Error('Failed to fetch pledges');
   }
 
   return response.json();
 };
 
-// Export Today's Pledges to CSV
-export const exportTodaysPledges = async (): Promise<Blob> => {
-  const response = await fetch(`${API_BASE_URL}/admin/reports/todays-pledges/export`, {
+// Export Pledges to CSV (supports date range)
+export const exportTodaysPledges = async (filters?: PledgeFilters): Promise<Blob> => {
+  const params = new URLSearchParams();
+  if (filters?.start_date) params.set('start_date', filters.start_date);
+  if (filters?.end_date) params.set('end_date', filters.end_date);
+
+  const url = params.toString()
+    ? `${API_BASE_URL}/admin/reports/todays-pledges/export?${params}`
+    : `${API_BASE_URL}/admin/reports/todays-pledges/export`;
+
+  const response = await fetch(url, {
     headers: getHeaders(),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to export today\'s pledges');
+    throw new Error('Failed to export pledges');
   }
 
   return response.blob();
