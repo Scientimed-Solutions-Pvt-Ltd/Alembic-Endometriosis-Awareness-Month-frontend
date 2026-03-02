@@ -24,6 +24,7 @@ import RegionsList from './admin/pages/RegionsList';
 import RegionsForm from './admin/pages/RegionsForm';
 import HqsList from './admin/pages/HqsList';
 import HqsForm from './admin/pages/HqsForm';
+import Reports from './admin/pages/Reports';
 
 function App() {
   return (
@@ -71,6 +72,9 @@ function App() {
           <Route path="masters/hqs" element={<HqsList />} />
           <Route path="masters/hqs/create" element={<HqsForm />} />
           <Route path="masters/hqs/:id/edit" element={<HqsForm />} />
+          
+          {/* Reports */}
+          <Route path="reports" element={<Reports />} />
         </Route>
       </Routes>
     </Router>

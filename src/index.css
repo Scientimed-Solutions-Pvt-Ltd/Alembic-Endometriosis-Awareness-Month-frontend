@@ -1055,8 +1055,131 @@ max-width: 600px;
     font-size:8px;
   }
 }
-/* Media Query for viewport size width 1180px by height 820px   */
-@media (width: 1180px) and (height: 820px) {
+@media (width: 1366px) and (height: 1024px) {
+  .sldcontainer{
+      position: relative;
+  left: 190px;
+  top: 145px;
+  transform: scale(1.32);
+  }
+  .sld2content {
+    position: relative;
+    left: -195px;
+    top: -19px;
+  }
+  .sld2content h1{
+    padding-left: 138px;
+    position: relative;
+    font-size: 20px;
+  }
+  .sld2content h1:nth-child(1){
+            padding-left: 147px;
+  }
+  .sld2content h1:nth-child(2){
+    padding-left: 150px;
+        padding-right: 85px;
+  }
+  .sld2content h1:nth-child(3){
+                    padding-left: 122px;
+  }
+  .sld2images{
+
+  }
+  .sld2images .crclimg{
+    height: 325px;
+    position: relative;
+    left: -134px;
+    top: -37px;
+  }
+  .sld2images .ramimg{
+    position: relative;
+    height: 251px;
+    top: -45px;
+    left: -117px;
+  }
+  .citation1{
+    left:90% !important;
+  }
+  .citations2 {
+    left:56% !important
+  }
+  .citations2 p{
+    font-size:11px;
+  }
+}
+/* Media Query for viewport size width 1180px by height 692px   */
+@media (width: 1180px) and (height: 692px) {
+  /*Slider 1*/
+  .sld1rbndiv{
+    max-width: 430px;
+  }
+  .sld1rbn {
+    max-height: 600px;
+    width: auto;
+  }
+  .contentdiv{
+    left:40%;
+    padding-top:20px;
+  }
+  .contentdiv .endoh1{
+
+  }
+  .contentdiv .endoh2{
+
+  }
+  .contentdiv .endoh3{
+  }
+  .contentdiv .txtimgs1{
+height: 72px;
+        max-width: 100%;
+        max-height: 80px;
+  }
+  .wmntxt {
+          color: #facc15;
+        margin-left: 137px;
+        margin-top: -13px;
+        font-size: 50px;
+  }
+  .sldcontainer{
+    position: relative;
+    left: 158px;
+    top: 78px;
+  }
+  .sld2content {
+    position: relative;
+    left: -195px;
+    top: -19px;
+  }
+  .sld2content h1{
+    padding-left: 138px;
+    position: relative;
+    font-size: 20px;
+  }
+  .sld2content h1:nth-child(1){
+    padding-left: 138px;
+  }
+  .sld2content h1:nth-child(2){
+    padding-left: 131px;
+        padding-right: 85px;
+  }
+  .sld2content h1:nth-child(3){
+            padding-left: 101px;
+  }
+  .sld2images{
+
+  }
+  .sld2images .crclimg{
+    height: 325px;
+    position: relative;
+    left: -134px;
+    top: -37px;
+  }
+  .sld2images .ramimg{
+    position: relative;
+    height: 251px;
+    top: -45px;
+    left: -117px;
+  }
   .citation1{
     left:90% !important;
   }
@@ -1064,8 +1187,93 @@ max-width: 600px;
     left:85% !important;
   }
   .citations2 p{
-    font-size:7px;
+    font-size:9px;
   }
+
+}
+/* Media Query for viewport size width 1180px by height 820px   */
+@media (width: 1180px) and (height: 820px) {
+  /*Slider 1*/
+  .sld1rbndiv{
+    max-width: 480px;
+  }
+  .sld1rbn {
+    max-height: 600px;
+    width: auto;
+  }
+  .contentdiv{
+    left:40%;
+    padding-top:20px;
+  }
+  .contentdiv .endoh1{
+
+  }
+  .contentdiv .endoh2{
+
+  }
+  .contentdiv .endoh3{
+  }
+  .contentdiv .txtimgs1{
+height: 72px;
+        max-width: 100%;
+        max-height: 80px;
+  }
+  .wmntxt {
+          color: #facc15;
+        margin-left: 137px;
+        margin-top: -13px;
+        font-size: 50px;
+  }
+  .sldcontainer{
+    position: relative;
+    left: 158px;
+    top: 78px;
+  }
+  .sld2content {
+    position: relative;
+    left: -195px;
+    top: -19px;
+  }
+  .sld2content h1{
+    padding-left: 138px;
+    position: relative;
+    font-size: 20px;
+  }
+  .sld2content h1:nth-child(1){
+    padding-left: 138px;
+  }
+  .sld2content h1:nth-child(2){
+    padding-left: 131px;
+        padding-right: 85px;
+  }
+  .sld2content h1:nth-child(3){
+            padding-left: 101px;
+  }
+  .sld2images{
+
+  }
+  .sld2images .crclimg{
+    height: 325px;
+    position: relative;
+    left: -134px;
+    top: -37px;
+  }
+  .sld2images .ramimg{
+    position: relative;
+    height: 251px;
+    top: -45px;
+    left: -117px;
+  }
+  .citation1{
+    left:90% !important;
+  }
+  .citations2 {
+    left:85% !important;
+  }
+  .citations2 p{
+    font-size:9px;
+  }
+
 }
 /* Media Query for viewport size width 1024px by height 768px   */
 @media (width: 1024px) and (height: 768px) {

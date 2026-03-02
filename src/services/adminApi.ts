@@ -825,3 +825,284 @@ export const importDoctors = async (file: File): Promise<{ success: boolean; mes
 
   return response.json();
 };
+
+// ==================== REPORTS & ANALYTICS APIS ====================
+
+export interface ReportSummary {
+  total_doctors: number;
+  pledged_doctors: number;
+  terms_accepted: number;
+  pending_doctors: number;
+  total_mrs: number;
+  active_mrs: number;
+  inactive_mrs: number;
+  pledge_rate: number;
+  terms_acceptance_rate: number;
+  mr_activity_rate: number;
+  avg_pledges_per_mr: number;
+}
+
+export interface ZoneReport {
+  id: number;
+  name: string;
+  code: string;
+  total_regions: number;
+  total_mrs: number;
+  total_doctors: number;
+  pledged_doctors: number;
+  pending_doctors: number;
+  pledge_rate: number;
+}
+
+export interface RegionReport {
+  id: number;
+  name: string;
+  code: string;
+  zone_name: string;
+  total_areas: number;
+  total_mrs: number;
+  total_doctors: number;
+  pledged_doctors: number;
+  pending_doctors: number;
+  pledge_rate: number;
+}
+
+export interface AreaReport {
+  id: number;
+  name: string;
+  code: string;
+  region_name: string;
+  zone_name: string;
+  total_mrs: number;
+  total_doctors: number;
+  pledged_doctors: number;
+  pending_doctors: number;
+  pledge_rate: number;
+}
+
+export interface CityReport {
+  city: string;
+  total_doctors: number;
+  pledged_doctors: number;
+  pending_doctors: number;
+  pledge_rate: number;
+}
+
+export interface MRPerformance {
+  id: number;
+  name: string;
+  employee_id: string;
+  mobile?: string;
+  zone_name: string;
+  region_name: string;
+  area_name: string;
+  total_doctors: number;
+  pledged_doctors: number;
+  pending_doctors: number;
+  pledge_rate: number;
+}
+
+export interface PledgeTrend {
+  date: string;
+  count: number;
+}
+
+export interface HierarchyPerformance {
+  id: number;
+  name: string;
+  employee_id: string;
+  user_type: string;
+  zone_name: string;
+  region_name: string;
+  area_name: string;
+  total_mrs: number;
+  total_doctors: number;
+  pledged_doctors: number;
+  pending_doctors: number;
+  pledge_rate: number;
+}
+
+// Report Summary
+export const getReportSummary = async (): Promise<SingleResponse<ReportSummary>> => {
+  const response = await fetch(`${API_BASE_URL}/admin/reports/summary`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch report summary');
+  }
+
+  return response.json();
+};
+
+// Zone-wise Report
+export const getZoneWiseReport = async (): Promise<SingleResponse<ZoneReport[]>> => {
+  const response = await fetch(`${API_BASE_URL}/admin/reports/zone-wise`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch zone-wise report');
+  }
+
+  return response.json();
+};
+
+// Region-wise Report
+export const getRegionWiseReport = async (zoneId?: number): Promise<SingleResponse<RegionReport[]>> => {
+  const params = new URLSearchParams();
+  if (zoneId) params.set('zone_id', zoneId.toString());
+
+  const response = await fetch(`${API_BASE_URL}/admin/reports/region-wise?${params}`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch region-wise report');
+  }
+
+  return response.json();
+};
+
+// Area-wise Report
+export const getAreaWiseReport = async (params?: { zone_id?: number; region_id?: number }): Promise<SingleResponse<AreaReport[]>> => {
+  const queryParams = new URLSearchParams();
+  if (params?.zone_id) queryParams.set('zone_id', params.zone_id.toString());
+  if (params?.region_id) queryParams.set('region_id', params.region_id.toString());
+
+  const response = await fetch(`${API_BASE_URL}/admin/reports/area-wise?${queryParams}`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch area-wise report');
+  }
+
+  return response.json();
+};
+
+// City-wise Report
+export const getCityWiseReport = async (limit?: number): Promise<SingleResponse<CityReport[]>> => {
+  const params = new URLSearchParams();
+  if (limit) params.set('limit', limit.toString());
+
+  const response = await fetch(`${API_BASE_URL}/admin/reports/city-wise?${params}`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch city-wise report');
+  }
+
+  return response.json();
+};
+
+// MR Performance Report
+export const getMRPerformanceReport = async (params?: {
+  sort_by?: string;
+  sort_order?: string;
+  limit?: number;
+  zone_id?: number;
+  region_id?: number;
+  area_id?: number;
+}): Promise<SingleResponse<MRPerformance[]>> => {
+  const queryParams = new URLSearchParams();
+  if (params?.sort_by) queryParams.set('sort_by', params.sort_by);
+  if (params?.sort_order) queryParams.set('sort_order', params.sort_order);
+  if (params?.limit) queryParams.set('limit', params.limit.toString());
+  if (params?.zone_id) queryParams.set('zone_id', params.zone_id.toString());
+  if (params?.region_id) queryParams.set('region_id', params.region_id.toString());
+  if (params?.area_id) queryParams.set('area_id', params.area_id.toString());
+
+  const response = await fetch(`${API_BASE_URL}/admin/reports/mr-performance?${queryParams}`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch MR performance report');
+  }
+
+  return response.json();
+};
+
+// Top Performers
+export const getTopPerformers = async (limit?: number): Promise<SingleResponse<MRPerformance[]>> => {
+  const params = new URLSearchParams();
+  if (limit) params.set('limit', limit.toString());
+
+  const response = await fetch(`${API_BASE_URL}/admin/reports/top-performers?${params}`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch top performers');
+  }
+
+  return response.json();
+};
+
+// Zero Pledge MRs
+export const getZeroPledgeMRs = async (): Promise<SingleResponse<MRPerformance[]> & { count: number }> => {
+  const response = await fetch(`${API_BASE_URL}/admin/reports/zero-pledge-mrs`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch zero pledge MRs');
+  }
+
+  return response.json();
+};
+
+// Pledge Trend
+export const getPledgeTrend = async (days?: number): Promise<SingleResponse<PledgeTrend[]>> => {
+  const params = new URLSearchParams();
+  if (days) params.set('days', days.toString());
+
+  const response = await fetch(`${API_BASE_URL}/admin/reports/pledge-trend?${params}`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch pledge trend');
+  }
+
+  return response.json();
+};
+
+// Hierarchy Performance (ZM/RM/AM wise)
+export const getHierarchyPerformance = async (level: 'ZM' | 'RM' | 'AM'): Promise<SingleResponse<HierarchyPerformance[]>> => {
+  const params = new URLSearchParams();
+  params.set('level', level);
+
+  const response = await fetch(`${API_BASE_URL}/admin/reports/hierarchy-performance?${params}`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch hierarchy performance');
+  }
+
+  return response.json();
+};
+
+// Export Report
+export const exportReport = async (type: string, format: 'json' | 'csv' = 'csv'): Promise<Blob | object> => {
+  const params = new URLSearchParams();
+  params.set('type', type);
+  params.set('format', format);
+
+  const response = await fetch(`${API_BASE_URL}/admin/reports/export?${params}`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to export report');
+  }
+
+  if (format === 'csv') {
+    return response.blob();
+  }
+
+  return response.json();
+};
