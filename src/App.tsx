@@ -26,6 +26,10 @@ import HqsList from './admin/pages/HqsList';
 import HqsForm from './admin/pages/HqsForm';
 import Reports from './admin/pages/Reports';
 
+// Leaderboard imports
+import LeaderboardLogin from './leaderboard/pages/LeaderboardLogin';
+import LeaderboardDashboard from './leaderboard/pages/LeaderboardDashboard';
+
 function App() {
   return (
     <Router>
@@ -76,6 +80,11 @@ function App() {
           {/* Reports */}
           <Route path="reports" element={<Reports />} />
         </Route>
+
+        {/* Leaderboard routes */}
+        <Route path="/leaderboard/login" element={<LeaderboardLogin />} />
+        <Route path="/leaderboard" element={<LeaderboardDashboard />} />
+        <Route path="/leaderboard/dashboard" element={<LeaderboardDashboard />} />
       </Routes>
     </Router>
   );

@@ -115,6 +115,24 @@ const TakePledge: React.FC = () => {
     // Don't fetch pledge count on page load - only show ribbon after pledge is taken
   }, []);
 
+  // Show skip button after 3 seconds when consent is accepted and page is ready
+  useEffect(() => {
+    if (!showConsent && !pledgeCompleted && !isListening) {
+      // Start timer to show skip button after 3 seconds
+      skipTimerRef.current = setTimeout(() => {
+        setShowSkipButton(true);
+      }, 3000);
+    }
+
+    return () => {
+      // Cleanup timer if component unmounts or conditions change
+      if (skipTimerRef.current) {
+        clearTimeout(skipTimerRef.current);
+        skipTimerRef.current = null;
+      }
+    };
+  }, [showConsent, pledgeCompleted, isListening]);
+
   /**
    * Handle accepting terms and conditions
    */
@@ -583,8 +601,8 @@ being stored/used through such portal/platform by Alembic and / or third party.
                         {isListening ? 'Say "I Support Yellow March"' : 'to take pledge'}
                       </p>
                       
-                      {/* Skip Button - Shows after 3 seconds when listening */}
-                      {isListening && showSkipButton && (
+                      {/* Skip Button - Shows after 3 seconds */}
+                      {showSkipButton && (
                         <button
                           onClick={handleSkipClick}
                           className="px-8 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-full text-base font-medium transition-all duration-300 animate-fade-in mb-4"
