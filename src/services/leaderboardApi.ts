@@ -274,3 +274,22 @@ export const getManagerDetails = async (id: number): Promise<{ success: boolean;
 
   return response.json();
 };
+
+export const exportLeaderboard = async (params?: {
+  zone_id?: number;
+  region_id?: number;
+}): Promise<Blob> => {
+  const queryParams = new URLSearchParams();
+  if (params?.zone_id) queryParams.set('zone_id', params.zone_id.toString());
+  if (params?.region_id) queryParams.set('region_id', params.region_id.toString());
+
+  const response = await fetch(`${API_BASE_URL}/leaderboard/export?${queryParams}`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to export leaderboard data');
+  }
+
+  return response.blob();
+};

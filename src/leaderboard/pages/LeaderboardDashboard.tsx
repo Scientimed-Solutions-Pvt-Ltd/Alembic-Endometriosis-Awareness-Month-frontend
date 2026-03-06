@@ -6,6 +6,7 @@ import {
   leaderboardLogout,
   getLeaderboardData,
   isLeaderboardAuthenticated,
+  exportLeaderboard,
   type LeaderboardData,
   type FilterOptions,
   type ManagerStats,
@@ -73,6 +74,25 @@ const LeaderboardDashboard: React.FC = () => {
       navigate('/leaderboard/login');
     } catch (err) {
       console.error('Logout failed:', err);
+    }
+  };
+
+  const handleExportCSV = async () => {
+    try {
+      const blob = await exportLeaderboard({
+        zone_id: selectedZone,
+        region_id: selectedRegion,
+      });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `pledged_doctors_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      setError('Failed to export pledged doctors data');
     }
   };
 
@@ -334,6 +354,19 @@ const LeaderboardDashboard: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* Export CSV */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Export CSV
+          </button>
+        </div>
 
         {/* Tabs */}
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
